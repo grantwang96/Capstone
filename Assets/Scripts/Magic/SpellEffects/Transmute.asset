@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f22f23e4bcd234749b8578f561858b58, type: 3}
+  m_Name: Transmute
+  m_EditorClassIdentifier: 
+  spellColor: {r: 1, g: 0, b: 0, a: 1}
+  spellDescription: -Change one object to another temporarily.
+  durationLowerBound: 5
+  durationUpperBound: 10
+  projectile: {fileID: 4510573379921386, guid: 222ab9474b42391408b8b22f5cf88a82, type: 2}
+  deathFX: {fileID: 4201116936921926, guid: 1a7579c4852d25f4aab18824714e50ea, type: 2}
+  force: 80
+  possibleResults:
+  - {fileID: 1921460291839440, guid: 29c94c86fe3bb8341bca7b0312b57162, type: 2}
+  - {fileID: 1789708802259452, guid: 0b72c98811c9b02499035a4ffd9e4352, type: 2}
+  - {fileID: 1116111564203386, guid: 6ec9de84b1dc2cc47a78dadc91f381da, type: 2}

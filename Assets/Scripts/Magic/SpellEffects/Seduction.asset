@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ba45ba64cb2be746af373a7d0f69b9f, type: 3}
+  m_Name: Seduction
+  m_EditorClassIdentifier: 
+  spellColor: {r: 1, g: 0, b: 0.5172415, a: 1}
+  spellDescription: -Everything this spell hits falls in love with you.
+  projectile: {fileID: 4510573379921386, guid: 222ab9474b42391408b8b22f5cf88a82, type: 2}
+  deathFX: {fileID: 4201116936921926, guid: 1a7579c4852d25f4aab18824714e50ea, type: 2}
+  dokiFX: {fileID: 4899117658361652, guid: 8835e72e7c5a97849adc995d255dbb79, type: 2}
+  radius: 4
+  durationLowerBound: 15
+  durationUpperBound: 25
+  force: 30

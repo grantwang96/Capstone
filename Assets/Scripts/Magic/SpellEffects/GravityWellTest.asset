@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f29f00b89507d1469233e048d75d882, type: 3}
+  m_Name: GravityWellTest
+  m_EditorClassIdentifier: 
+  spellColor: {r: 0, g: 0.91724133, b: 1, a: 1}
+  spellDescription: -Creates a vortex upon collision.
+  durationLowerBound: 10
+  durationUpperBound: 20
+  maximumRange: 6
+  Range: 9
+  suckForce: 40
+  throwForce: 50
+  weight: 1.61
+  projectile: {fileID: 4510573379921386, guid: 222ab9474b42391408b8b22f5cf88a82, type: 2}
+  gravWell: {fileID: 4695097382403306, guid: 1ce8c43330bff664bb4aea6cfd036c18, type: 2}
+  deathFX: {fileID: 4201116936921926, guid: 1a7579c4852d25f4aab18824714e50ea, type: 2}
+  combatLayer:
+    serializedVersion: 2
+    m_Bits: 1
