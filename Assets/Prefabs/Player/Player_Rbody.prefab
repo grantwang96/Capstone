@@ -315,6 +315,8 @@ MonoBehaviour:
   spellInventory: []
   heldWeaponSlot: {fileID: 0}
   hoverWeaponSlot: {fileID: 0}
+  hoverSpellDetails: {fileID: 0}
+  touchedSpell: {fileID: 0}
 --- !u!114 &114390575114823910
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -12,6 +12,8 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
 
     public Image heldWeaponSlot;
     public Image hoverWeaponSlot;
+    public Transform hoverSpellDetails;
+    public SpellBook touchedSpell;
 
     public List<Damageable> seducedObjects = new List<Damageable>();
     public Coroutine seductionEffect;
@@ -61,6 +63,7 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
 
     void OnTriggerEnter(Collider coll)
     {
+        /*
         if (coll.GetComponent<SpellBook>() != null)
         {
             SpellBook touchSpell = coll.GetComponent<SpellBook>();
@@ -70,10 +73,21 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
             hoverWeaponSlot.transform.Find("Side Effect").GetComponent<Text>().text =
                 touchSpell.sideEffectDescription;
         }
+        */
+        if (coll.GetComponent<SpellBook>() != null)
+        {
+            touchedSpell = coll.GetComponent<SpellBook>();
+            hoverSpellDetails = touchedSpell.createSpellDetails(transform);
+            hoverSpellDetails.GetComponent<RectTransform>().forward = transform.forward;
+        }
     }
 
     void OnTriggerStay(Collider coll)
     {
+        if(coll.GetComponent<SpellBook>() == touchedSpell && hoverSpellDetails != null)
+        {
+            hoverSpellDetails.GetComponent<RectTransform>().forward = transform.forward;
+        }
         if (Input.GetKeyDown(KeyCode.E) && coll.GetComponent<Interactable>() != null)
         {
             Interactable interact = coll.GetComponent<Interactable>();
@@ -83,11 +97,13 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
 
     void OnTriggerExit(Collider coll)
     {
-        if (coll.GetComponent<SpellBook>() != null)
+        if (coll.GetComponent<SpellBook>() == touchedSpell)
         {
             Debug.Log("Goodbye");
-            SpellBook touchSpell = coll.GetComponent<SpellBook>();
-            hoverWeaponSlot.gameObject.SetActive(false);
+            touchedSpell.destroySpellDetails();
+            if(hoverSpellDetails != null) { hoverSpellDetails = null; }
+            // SpellBook touchSpell = coll.GetComponent<SpellBook>();
+            // hoverWeaponSlot.gameObject.SetActive(false);
         }
     }
 

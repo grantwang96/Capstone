@@ -176,27 +176,46 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
         HeadMove.drunk = false;
         Destroy(newStatusEffect.gameObject);
         drunkness = null;
+        Debug.Log("Done Recovering Speed");
         // drunkMod = 1;
     }
     public void Slow(float duration, float severity)
     {
-        if (slowness == null) { slowness = StartCoroutine(processSlow(duration, slownessSeverity)); }
+        if (slowness == null) { slowness = StartCoroutine(processSlow(duration, severity)); }
     }
     IEnumerator processSlow(float duration, float severity)
     {
         slownessSeverity *= severity;
         if(slownessSeverity < 0.25f) { slownessSeverity = 0.25f; }
-        StartCoroutine(recoverSpeed(duration));
-        yield return new WaitForEndOfFrame();
+        // StartCoroutine(recoverSpeed(duration));
+        float startTime = Time.time;
+        Debug.Log("Recovering Speed");
+        Image newStatusEffect = Instantiate(statusEffectPrefab);
+        newStatusEffect.sprite = statusEffectIcons[2];
+        newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
+        float originSeverity = slownessSeverity;
+        float full = 1f - slownessSeverity;
+        Debug.Log("Duration is: " + duration);
+        while (Time.time - startTime < duration)
+        {
+            slownessSeverity = originSeverity + ((Time.time - startTime) / duration) * full;
+            Debug.Log(slownessSeverity);
+            newStatusEffect.fillAmount = 1f - (slownessSeverity - originSeverity)/ full;
+            yield return new WaitForEndOfFrame();
+        }
+        Destroy(newStatusEffect.gameObject);
+        slownessSeverity = 1f;
+        slowness = null;
     }
     IEnumerator recoverSpeed(float duration)
     {
+        Debug.Log("Recovering Speed");
         Image newStatusEffect = Instantiate(statusEffectPrefab);
-        newStatusEffect.sprite = statusEffectIcons[0];
+        newStatusEffect.sprite = statusEffectIcons[2];
         newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
         while (slownessSeverity < 1f)
         {
-            slownessSeverity += Time.deltaTime / (duration - slownessSeverity);
+            slownessSeverity += Time.deltaTime/* / (duration - slownessSeverity)*/;
             newStatusEffect.fillAmount = 1f - slownessSeverity;
             yield return new WaitForEndOfFrame();
         }

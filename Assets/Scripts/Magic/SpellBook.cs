@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpellBook : MonoBehaviour, Interactable {
 
@@ -15,6 +16,9 @@ public class SpellBook : MonoBehaviour, Interactable {
 
     public string spellEffectDescription;
     public string sideEffectDescription;
+    public Transform spellDetailsPrefab;
+    public Transform spellDetails;
+    public Transform worldCanvas;
 
     [SerializeField] int power;
     [SerializeField] float lifeSpan = 15f;
@@ -32,6 +36,7 @@ public class SpellBook : MonoBehaviour, Interactable {
         sideEffect = SpellManager.Instance.sideEffects[UnityEngine.Random.Range(0, SpellManager.Instance.sideEffects.Count)];
         sideEffect.setupSpell(this);
         GetComponent<ParticleSystem>().startColor = spellEffect.spellColor;
+        worldCanvas = GameObject.Find("WorldCanvas").transform;
         startTime = Time.time;
 	}
 
@@ -50,6 +55,7 @@ public class SpellBook : MonoBehaviour, Interactable {
             mR.enabled = false;
         }
         yield return new WaitForEndOfFrame();
+        destroySpellDetails();
         Destroy(gameObject);
     }
 
@@ -81,6 +87,7 @@ public class SpellBook : MonoBehaviour, Interactable {
     public void PickUp(Transform user, Fighter newFighter, Damageable newDamageable)
     {
         transform.parent = user;
+        destroySpellDetails();
         myUser = user;
         GetComponent<ParticleSystem>().Stop();
         if(user.GetComponent<SpellCaster>() != null) { user.GetComponent<SpellCaster>().AddSpell(this); }
@@ -100,5 +107,25 @@ public class SpellBook : MonoBehaviour, Interactable {
         myUserDamageable = null;
         transform.Find("Book").gameObject.SetActive(true);
         startTime = Time.time;
+    }
+    
+    public Transform createSpellDetails(Transform cameraHead)
+    {
+        Vector3 dir = transform.position - cameraHead.position;
+        Quaternion lookDir = Quaternion.LookRotation(dir);
+        spellDetails = Instantiate(spellDetailsPrefab, transform.position + Vector3.up, lookDir);
+        spellDetails.SetParent(worldCanvas, false);
+        spellDetails.Find("SpellEffectDescription").GetComponent<Text>().text = spellEffectDescription;
+        spellDetails.Find("SideEffectDescription").GetComponent<Text>().text = sideEffectDescription;
+        return spellDetails;
+    }
+
+    public void destroySpellDetails()
+    {
+        if(spellDetails != null)
+        {
+            Destroy(spellDetails.gameObject);
+        }
+        spellDetails = null;
     }
 }

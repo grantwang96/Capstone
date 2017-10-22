@@ -75,14 +75,15 @@ public class Movable : MonoBehaviour, Damageable
     public void Seduce(float duration, GameObject target, SpellCaster owner)
     {
         myOwner = owner;
-        if(seduction != null) { StopCoroutine(seduction); }
-        seduction = StartCoroutine(processSeduction(duration, target, owner));
+        if(seduction == null) { seduction = StartCoroutine(processSeduction(duration, target, owner)); }
     }
 
     IEnumerator processSeduction(float duration, GameObject target, SpellCaster owner)
     {
         attackTarget = target.transform;
         float startTime = Time.time;
+        Color originColor = GetComponent<MeshRenderer>().material.color;
+        GetComponent<MeshRenderer>().material.color = new Color(255, 0, 155);
         while (Time.time - startTime < duration)
         {
             if (target.transform == attackTarget) { processSeducedMovement(target); }
@@ -90,6 +91,7 @@ public class Movable : MonoBehaviour, Damageable
             yield return new WaitForEndOfFrame();
         }
         myOwner.removeFromSeductionList(this.GetComponent<Damageable>());
+        GetComponent<MeshRenderer>().material.color = originColor;
         myOwner = null;
         attackTarget = null;
         Transform dokiFX = transform.Find("Doki");
@@ -100,6 +102,7 @@ public class Movable : MonoBehaviour, Damageable
             dokiFX.parent = null;
             Destroy(dokiFX.gameObject, dFX.startLifetime);
         }
+        seduction = null;
     }
 
     void processSeducedMovement(GameObject target)

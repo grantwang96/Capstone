@@ -263,6 +263,10 @@ MonoBehaviour:
   myUserBody: {fileID: 0}
   spellEffectDescription: 
   sideEffectDescription: 
+  spellDetailsPrefab: {fileID: 224491901453021108, guid: 68fa1a5324342034c914066ddd771a6c,
+    type: 2}
+  spellDetails: {fileID: 0}
+  worldCanvas: {fileID: 0}
   power: 0
   lifeSpan: 15
   startTime: 0
@@ -340,7 +344,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -1997454719
+  randomSeed: -976809378
   InitialModule:
     serializedVersion: 3
     enabled: 1
