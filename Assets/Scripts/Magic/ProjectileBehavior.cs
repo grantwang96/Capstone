@@ -35,13 +35,13 @@ public class ProjectileBehavior : MonoBehaviour {
     {
         if(coll.transform != myCaster && coll.transform != myCasterBody)
         {
-            if (isPrimary) { mySpellEffect.primaryEffect(this, coll.collider); }
-            else { mySpellEffect.secondaryEffect(this, coll.collider); }
+            if (isPrimary) { mySpellEffect.primaryEffect(this, coll); }
+            else { mySpellEffect.secondaryEffect(this, coll); }
         }
     }
 
-    public void initiateDie()
+    public void initiateDie(Vector3 point)
     {
-        StartCoroutine(mySpellEffect.Die(transform));
+        StartCoroutine(mySpellEffect.Die(transform, point));
     }
 }

@@ -268,6 +268,7 @@ MonoBehaviour:
   startTime: 0
   sideEffectSeverity: 0
   sideEffectDuration: 0
+  myBodyParts: []
 --- !u!135 &135379505446110404
 SphereCollider:
   m_ObjectHideFlags: 1
@@ -339,7 +340,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 338265209
+  randomSeed: -1997454719
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -491,7 +492,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.3
+      scalar: 0.2
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -696,7 +697,7 @@ ParticleSystem:
     startRotation:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 0.0073303827
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -899,7 +900,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 20
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -998,9 +999,9 @@ ParticleSystem:
           tangentMode: 0
         - serializedVersion: 2
           time: 1
-          value: 0.30303037
-          inSlope: -1.1034759
-          outSlope: -1.1034759
+          value: 0.037876487
+          inSlope: -1.3631393
+          outSlope: -1.3631393
           tangentMode: 0
         m_PreInfinity: 2
         m_PostInfinity: 2
@@ -1107,7 +1108,7 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxes: 0
   RotationModule:
-    enabled: 0
+    enabled: 1
     x:
       serializedVersion: 2
       minMaxState: 0
@@ -1193,7 +1194,7 @@ ParticleSystem:
     curve:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.7853982
+      scalar: 6.283185
       minScalar: 0.7853982
       maxCurve:
         serializedVersion: 2
@@ -3556,7 +3557,7 @@ ParticleSystemRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 2100000, guid: d443a1b4d0dbfd843abb9b1084d6f534, type: 2}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0

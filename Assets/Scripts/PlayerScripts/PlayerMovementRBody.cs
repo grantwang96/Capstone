@@ -27,13 +27,15 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
     int drunkMod = 1;
     CameraMovement camScript;
     public GameObject DrunkHead;
+    public GameObject statusEffectBar;
+    public Image statusEffectPrefab;
     public Image shroud;
 
     Rigidbody rbody;
     #endregion
 
     #region Important Lists
-
+    public Sprite[] statusEffectIcons;
     #endregion
 
     #region Status Effects
@@ -155,39 +157,52 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
 
     public void Drunk(float duration)
     {
-        if (drunkness != null) { StopCoroutine(drunkness); }
-        drunkness = StartCoroutine(processDrunk(duration));
+        if (drunkness == null) { drunkness = StartCoroutine(processDrunk(duration)); }
     }
     IEnumerator processDrunk(float duration)
     {
-        // drunkMod = -1;
+        float startTime = Time.time;
         DrunkHead.SetActive(true);
         HeadMove.drunk = true;
-        yield return new WaitForSeconds(duration);
+        Image newStatusEffect = Instantiate(statusEffectPrefab);
+        newStatusEffect.sprite = statusEffectIcons[1];
+        newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
+        while (Time.time - startTime < duration)
+        {
+            newStatusEffect.fillAmount = 1f - (Time.time - startTime) / duration;
+            yield return new WaitForEndOfFrame();
+        }
         DrunkHead.SetActive(false);
         HeadMove.drunk = false;
+        Destroy(newStatusEffect.gameObject);
+        drunkness = null;
         // drunkMod = 1;
     }
     public void Slow(float duration, float severity)
     {
-        slownessSeverity -= severity;
-        if (slownessSeverity <= 0f) { slownessSeverity = 0.25f; }
-        if (slowness != null) { StopCoroutine(slowness); }
-        slowness = StartCoroutine(processSlow(duration, slownessSeverity));
+        if (slowness == null) { slowness = StartCoroutine(processSlow(duration, slownessSeverity)); }
     }
     IEnumerator processSlow(float duration, float severity)
     {
-        yield return new WaitForSeconds(duration);
-        StartCoroutine(recoverSpeed());
+        slownessSeverity *= severity;
+        if(slownessSeverity < 0.25f) { slownessSeverity = 0.25f; }
+        StartCoroutine(recoverSpeed(duration));
+        yield return new WaitForEndOfFrame();
     }
-    IEnumerator recoverSpeed()
+    IEnumerator recoverSpeed(float duration)
     {
+        Image newStatusEffect = Instantiate(statusEffectPrefab);
+        newStatusEffect.sprite = statusEffectIcons[0];
+        newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
         while (slownessSeverity < 1f)
         {
-            slownessSeverity += Time.deltaTime * 0.5f;
-            if (slownessSeverity > 1f) { slownessSeverity = 1f; }
+            slownessSeverity += Time.deltaTime / (duration - slownessSeverity);
+            newStatusEffect.fillAmount = 1f - slownessSeverity;
             yield return new WaitForEndOfFrame();
         }
+        Destroy(newStatusEffect.gameObject);
+        slownessSeverity = 1f;
+        slowness = null;
     }
     #endregion
 
@@ -284,8 +299,7 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
 
     public void fly(float force, float duration)
     {
-        if (flight != null) { StopCoroutine(flight); }
-        flight = StartCoroutine(processFlying(force, duration));
+        if (flight == null) { flight = StartCoroutine(processFlying(force, duration)); }
     }
 
     IEnumerator processFlying(float force, float duration)
@@ -294,13 +308,20 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
         isFlying = true;
         HeadMove.separateControl = false;
         rbody.constraints = RigidbodyConstraints.None;
+        Image newStatusEffect = Instantiate(statusEffectPrefab);
+        newStatusEffect.sprite = statusEffectIcons[0];
+        newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
         if (rbody.useGravity)
         {
             rbody.useGravity = false;
             rbody.AddForce(Vector3.up * force, ForceMode.Impulse);
         }
         rbody.angularVelocity = new Vector3(Random.value, Random.value, Random.value) * Random.Range(-force, force);
-        yield return new WaitForSeconds(duration);
+        while(Time.time - startTime < duration)
+        {
+            newStatusEffect.fillAmount = 1f - (Time.time - startTime) / duration;
+            yield return new WaitForEndOfFrame();
+        }
         rbody.useGravity = true;
         transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
         rbody.angularVelocity = Vector3.zero;
@@ -309,6 +330,8 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
         HeadMove.transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
         isFlying = false;
         transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
+        Destroy(newStatusEffect.gameObject);
+        flight = null;
     }
 
     public void Seduce(float duration, GameObject target, SpellCaster owner)

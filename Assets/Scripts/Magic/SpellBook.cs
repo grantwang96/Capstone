@@ -23,8 +23,10 @@ public class SpellBook : MonoBehaviour, Interactable {
     public float sideEffectSeverity;
     public float sideEffectDuration;
 
-	// Use this for initialization
-	void Start () {
+    public MeshRenderer[] myBodyParts;
+
+    // Use this for initialization
+    void Start () {
         spellEffect = SpellManager.Instance.spellEffects[UnityEngine.Random.Range(0, SpellManager.Instance.spellEffects.Count)];
         spellEffect.setupSpellEffect(this);
         sideEffect = SpellManager.Instance.sideEffects[UnityEngine.Random.Range(0, SpellManager.Instance.sideEffects.Count)];
@@ -37,7 +39,18 @@ public class SpellBook : MonoBehaviour, Interactable {
     {
         if(Time.time - startTime >= lifeSpan && transform.parent == null
            && myUser == null)
-        { Destroy(this.gameObject); }
+        { StartCoroutine(Die()); }
+    }
+
+    IEnumerator Die()
+    {
+        GetComponent<Collider>().enabled = false;
+        foreach(MeshRenderer mR in myBodyParts)
+        {
+            mR.enabled = false;
+        }
+        yield return new WaitForEndOfFrame();
+        Destroy(gameObject);
     }
 
     public void primaryCast()

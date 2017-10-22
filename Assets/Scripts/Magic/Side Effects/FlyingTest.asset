@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Name: FlyingTest
   m_EditorClassIdentifier: 
   sideEffectDescription: -May cause lightheadedness.
+  affectIcon: {fileID: 21300000, guid: 29b3db2f06d92314281858c36caf424c, type: 3}
   durationLowerBound: 15
   durationUpperBound: 20
   force: 3

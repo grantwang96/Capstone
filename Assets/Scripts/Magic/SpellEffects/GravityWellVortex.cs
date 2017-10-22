@@ -11,6 +11,9 @@ public class GravityWellVortex : MonoBehaviour {
     public float maxRange;
 
     public float speed;
+    public float initialEmissionRate;
+    float currEmission;
+    public float maxEmissionRate;
 
     public ParticleSystem effects;
     public SphereCollider rangeFinder;
@@ -28,6 +31,10 @@ public class GravityWellVortex : MonoBehaviour {
         ParticleSystem.ShapeModule shapeModule = effects.shape;
         shapeModule.radius = range;
         effects.startSpeed = -range;
+        ParticleSystem.EmissionModule emModule = effects.emission;
+        maxEmissionRate = emModule.rate.constant;
+        emModule.rateOverTime = initialEmissionRate;
+        currEmission = initialEmissionRate;
         startTime = Time.time;
     }
 	
@@ -40,14 +47,16 @@ public class GravityWellVortex : MonoBehaviour {
         if (range < maxRange)
         {
             range += Time.deltaTime * rangeIncreaseFactor;
-            if(range > maxRange)
-            {
+            if(range > maxRange) {
                 range = maxRange;
                 startTime = Time.time;
             }
             rangeFinder.radius = range;
             ParticleSystem.ShapeModule shapeModule = effects.shape;
             shapeModule.radius = range;
+            ParticleSystem.EmissionModule emModule = effects.emission;
+            currEmission += Time.deltaTime * (range/maxRange * (maxEmissionRate - initialEmissionRate));
+            emModule.rateOverTime = currEmission;
             effects.startSpeed = -range;
         }
         if(trapped.Count > 0)

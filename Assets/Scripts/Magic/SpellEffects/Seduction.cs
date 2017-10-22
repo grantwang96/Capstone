@@ -17,9 +17,9 @@ public class Seduction : SpellEffect
 
     public float force;
     
-    public override IEnumerator Die(Transform projFired)
+    public override IEnumerator Die(Transform projFired, Vector3 point)
     {
-        Transform newExp = Instantiate(deathFX, projFired.position, Quaternion.identity);
+        Transform newExp = Instantiate(deathFX, point, Quaternion.identity);
         Collider[] colls = Physics.OverlapSphere(projFired.transform.position, radius);
         ProjectileBehavior projData = projFired.GetComponent<ProjectileBehavior>();
         SpellCaster caster = projData.myCaster.GetComponent<SpellCaster>();
@@ -38,9 +38,13 @@ public class Seduction : SpellEffect
                 }
             }
         }
+        projFired.GetComponent<Collider>().enabled = false;
+        projFired.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+        ParticleSystem projPart = projFired.GetComponent<ParticleSystem>();
+        projPart.Stop();
         Destroy(newExp.gameObject, 3f);
+        yield return new WaitForSeconds(projPart.startLifetime);
         Destroy(projFired.gameObject);
-        yield return new WaitForEndOfFrame();
     }
 
     public override void primaryCast(Transform caster, int power)
@@ -58,9 +62,9 @@ public class Seduction : SpellEffect
         newMissile.GetComponent<ParticleSystem>().startColor = spellColor;
     }
 
-    public override void primaryEffect(ProjectileBehavior projFired, Collider hit)
+    public override void primaryEffect(ProjectileBehavior projFired, Collision hit)
     {
-        projFired.initiateDie();
+        projFired.initiateDie(hit.contacts[0].point);
     }
 
     public override void secondaryCast(Transform caster, int power)
@@ -68,7 +72,7 @@ public class Seduction : SpellEffect
         throw new NotImplementedException();
     }
 
-    public override void secondaryEffect(ProjectileBehavior projFired, Collider hit)
+    public override void secondaryEffect(ProjectileBehavior projFired, Collision hit)
     {
         throw new NotImplementedException();
     }

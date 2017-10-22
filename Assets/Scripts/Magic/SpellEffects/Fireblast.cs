@@ -28,19 +28,18 @@ public class Fireblast : SpellEffect {
     public float blastRadius;
     public float radius;
 
-    public override IEnumerator Die(Transform projFired)
+    public override IEnumerator Die(Transform projFired, Vector3 point)
     {
         ProjectileBehavior proj = projFired.GetComponent<ProjectileBehavior>();
         proj.GetComponent<ParticleSystem>().Stop();
         if (proj.mainShot)
         {
-            Transform newFlame = Instantiate(tinyFlame, projFired.position, Quaternion.identity);
+            Transform newFlame = Instantiate(tinyFlame, point, Quaternion.identity);
             ParticleSystem flamePartSys = newFlame.GetComponent<ParticleSystem>();
             float startTime = Time.time;
             proj.GetComponent<Collider>().enabled = false;
             proj.GetComponent<Rigidbody>().isKinematic = true;
             proj.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-            // yield return new WaitForSeconds(delay);
             while(Time.time - startTime < delay)
             {
                 float startLife = flamePartSys.startLifetime;
@@ -97,9 +96,9 @@ public class Fireblast : SpellEffect {
         Debug.Log("Bounce Count = " + proj.bounceCount);
     }
 
-    public override void primaryEffect(ProjectileBehavior projFired, Collider hit)
+    public override void primaryEffect(ProjectileBehavior projFired, Collision hit)
     {
-        projFired.initiateDie();
+        projFired.initiateDie(hit.contacts[0].point);
     }
 
     public override void secondaryCast(Transform caster, int power)
@@ -107,7 +106,7 @@ public class Fireblast : SpellEffect {
         throw new NotImplementedException();
     }
 
-    public override void secondaryEffect(ProjectileBehavior projFired, Collider hit)
+    public override void secondaryEffect(ProjectileBehavior projFired, Collision hit)
     {
         throw new NotImplementedException();
     }

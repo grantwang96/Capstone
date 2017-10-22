@@ -10,8 +10,8 @@ public abstract class SpellEffect : ScriptableObject{
 
     public abstract void primaryCast(Transform caster, int power);
     public abstract void secondaryCast(Transform caster, int power);
-    public abstract void primaryEffect(ProjectileBehavior projFired, Collider hit);
-    public abstract void secondaryEffect(ProjectileBehavior projFired, Collider hit);
+    public abstract void primaryEffect(ProjectileBehavior projFired, Collision hit);
+    public abstract void secondaryEffect(ProjectileBehavior projFired, Collision hit);
     public abstract void setupSpellEffect(SpellBook spellBook);
-    public abstract IEnumerator Die(Transform projFired);
+    public abstract IEnumerator Die(Transform projFired, Vector3 point);
 }

@@ -25,37 +25,16 @@ public class GravityWell : SpellEffect
 
     public LayerMask combatLayer;
 
-    public override IEnumerator Die(Transform projFired)
+    public override IEnumerator Die(Transform projFired, Vector3 point)
     {
-        /*
+        Transform newExp = Instantiate(deathFX, point, projFired.rotation);
         projFired.GetComponent<Collider>().enabled = false;
-        projFired.GetComponent<Rigidbody>().isKinematic = true;
         projFired.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-        float duration = projFired.GetComponent<ProjectileBehavior>().power;
-        float startDeathTime = Time.time;
-        while(Time.time - startDeathTime < duration)
-        {
-            Collider[] colls = Physics.OverlapSphere(projFired.position, Range, combatLayer);
-            foreach(Collider coll in colls)
-            {
-                Rigidbody collRbody = coll.GetComponent<Rigidbody>();
-                Vector3 suckDir = (projFired.position - coll.transform.position).normalized;
-                if (coll.GetComponent<Damageable>() != null)
-                {
-                    coll.GetComponent<Damageable>().vortexGrab(projFired, suckForce, duration - (Time.time - startDeathTime));
-                }
-                else if(collRbody != null && !collRbody.isKinematic && collRbody.transform != projFired)
-                {
-                    collRbody.AddForce(suckDir * suckForce);
-                }
-            }
-            yield return new WaitForEndOfFrame();
-        }
-        */
-        Transform newExp = Instantiate(deathFX, projFired.position, projFired.rotation);
-        Destroy(projFired.gameObject);
+        ParticleSystem projPart = projFired.GetComponent<ParticleSystem>();
+        projPart.Stop();
         Destroy(newExp.gameObject, 3f);
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(projPart.startLifetime);
+        Destroy(projFired.gameObject);
     }
 
     public override void primaryCast(Transform caster, int power)
@@ -74,13 +53,13 @@ public class GravityWell : SpellEffect
         newMissile.GetComponent<ParticleSystem>().startColor = spellColor;
     }
 
-    public override void primaryEffect(ProjectileBehavior projFired, Collider hit)
+    public override void primaryEffect(ProjectileBehavior projFired, Collision hit)
     {
         Transform newGravWell = Instantiate(gravWell, projFired.transform.position, Quaternion.identity);
         GravityWellVortex gravScript = newGravWell.GetComponent<GravityWellVortex>();
         gravScript.force = suckForce;
         gravScript.maxRange = Range;
-        projFired.initiateDie();
+        projFired.initiateDie(hit.contacts[0].point);
     }
 
     public override void secondaryCast(Transform caster, int power)
@@ -99,9 +78,9 @@ public class GravityWell : SpellEffect
         newMissile.GetComponent<ParticleSystem>().startColor = spellColor;
     }
 
-    public override void secondaryEffect(ProjectileBehavior projFired, Collider hit)
+    public override void secondaryEffect(ProjectileBehavior projFired, Collision hit)
     {
-        projFired.initiateDie();
+        projFired.initiateDie(hit.contacts[0].point);
     }
 
     public override void setupSpellEffect(SpellBook spellBook)

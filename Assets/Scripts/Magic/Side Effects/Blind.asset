@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Name: Blind
   m_EditorClassIdentifier: 
   sideEffectDescription: -May cause obscured vision.
+  affectIcon: {fileID: 21300000, guid: 54cefcaaa88877b459f50d65bcdffd69, type: 3}
   durationLowerBound: 3
   durationUpperBound: 7
   severityLowerBound: 0.1

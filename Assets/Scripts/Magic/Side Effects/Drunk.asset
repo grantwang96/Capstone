@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Name: Drunk
   m_EditorClassIdentifier: 
   sideEffectDescription: -May cause blurry vision and unsteadiness.
+  affectIcon: {fileID: 21300000, guid: 9e615c9f477ddab428a1605c155cff02, type: 3}
   durationLowerBound: 5
   durationUpperBound: 10

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Name: Slow
   m_EditorClassIdentifier: 
   sideEffectDescription: -May cause laziness.
+  affectIcon: {fileID: 21300000, guid: 5c099b352ba5c6e478857ceff3e1ae1b, type: 3}
   durationLowerBound: 5
   durationUpperBound: 10
   severityLowerBound: 0.1
