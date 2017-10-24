@@ -17,7 +17,7 @@ public class Movable : MonoBehaviour, Damageable
         return gameObject;
     }
 
-    public void TakeDamage(int damage, Vector3 dir, float force)
+    public void TakeDamage(Transform attacker, int damage, Vector3 dir, float force)
     {
         GetComponent<Rigidbody>().AddForce(dir * force, ForceMode.Impulse);
     }

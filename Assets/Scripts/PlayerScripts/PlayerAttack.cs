@@ -29,6 +29,7 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
 	// Update is called once per frame
 	void Update () {
         mouseScroll();
+        keyInputs();
         if (Input.GetMouseButtonDown(0) && spellInventory.Count > 0)
         {
             spellInventory[currSpell].primaryCast();
@@ -61,6 +62,25 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
         }
     }
 
+    void keyInputs()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1) && spellInventory.Count > 0)
+        {
+            currSpell = 0;
+            updateCurrSpellInfo();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2) && spellInventory.Count > 1)
+        {
+            currSpell = 1;
+            updateCurrSpellInfo();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3) && spellInventory.Count > 2)
+        {
+            currSpell = 2;
+            updateCurrSpellInfo();
+        }
+    }
+
     void OnTriggerEnter(Collider coll)
     {
         /*
@@ -88,10 +108,10 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
         {
             hoverSpellDetails.GetComponent<RectTransform>().forward = transform.forward;
         }
-        if (Input.GetKeyDown(KeyCode.E) && coll.GetComponent<Interactable>() != null)
+        if (Input.GetMouseButtonDown(1) && coll.GetComponent<Interactable>() != null)
         {
             Interactable interact = coll.GetComponent<Interactable>();
-            interact.PickUp(transform, myBody.GetComponent<Fighter>(), myBody.GetComponent<Damageable>());
+            interact.PickUp(transform, myBody, myBody.GetComponent<Fighter>(), myBody.GetComponent<Damageable>());
         }
     }
 
@@ -100,7 +120,9 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
         if (coll.GetComponent<SpellBook>() == touchedSpell)
         {
             Debug.Log("Goodbye");
-            touchedSpell.destroySpellDetails();
+            if(touchedSpell != null) {
+                touchedSpell.destroySpellDetails();
+            }
             if(hoverSpellDetails != null) { hoverSpellDetails = null; }
             // SpellBook touchSpell = coll.GetComponent<SpellBook>();
             // hoverWeaponSlot.gameObject.SetActive(false);
@@ -109,13 +131,18 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
 
     public void AddSpell(SpellBook newSpell)
     {
-        if(spellInventory.Count == 3)
+        if (spellInventory.Count == 3)
         {
             SpellBook temp = spellInventory[currSpell];
             spellInventory[currSpell] = newSpell;
             temp.Drop();
         }
-        else { spellInventory.Add(newSpell); }
+        else
+        {
+            spellInventory.Add(newSpell);
+            currSpell = spellInventory.Count - 1;
+            updateCurrSpellInfo();
+        }
         updateCurrSpellInfo();
         hoverWeaponSlot.gameObject.SetActive(false);
     }

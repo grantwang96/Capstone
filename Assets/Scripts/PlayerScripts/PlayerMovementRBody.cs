@@ -76,6 +76,7 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
     // Update is called once per frame
     void Update()
     {
+        // Physics.autoSyncTransforms = true;
         float horizontal = Input.GetAxis("Horizontal"); // Get player inputs
         float vertical = Input.GetAxis("Vertical"); // Get player inputs
 
@@ -87,7 +88,8 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
             Vector3 moveDir = ((transform.forward * vertical * speed) + (transform.right * horizontal * speed));
             if(moveDir != Vector3.zero)
             {
-                rbody.MovePosition(transform.position + moveDir * Time.deltaTime * slownessSeverity);
+                rbody.MovePosition(rbody.position + moveDir * Time.deltaTime * slownessSeverity);
+                // transform.position += moveDir * Time.deltaTime * slownessSeverity;
             }
         }
     }
@@ -199,7 +201,6 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
         while (Time.time - startTime < duration)
         {
             slownessSeverity = originSeverity + ((Time.time - startTime) / duration) * full;
-            Debug.Log(slownessSeverity);
             newStatusEffect.fillAmount = 1f - (slownessSeverity - originSeverity)/ full;
             yield return new WaitForEndOfFrame();
         }
@@ -227,12 +228,18 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
 
     #region Damageable Implementations
 
-    public void TakeDamage(int damage, Vector3 dir, float force)
+    public void TakeDamage(Transform attacker, int damage, Vector3 dir, float force)
     {
         if (hurting) { return; }
         hurting = true;
         health -= damage;
-
+        if(attacker != transform && attacker != null)
+        {
+            List<Damageable> hitList = new List<Damageable>();
+            if (attacker.GetComponent<Damageable>() != null) { hitList.Add(attacker.GetComponent<Damageable>()); }
+            if (hitList.Count > 0) {
+                myAttackScript.GetComponent<SpellCaster>().getHitList(hitList, myAttackScript.GetComponent<SpellCaster>()); }
+        }
         if (health <= 0)
         {
             Cursor.lockState = CursorLockMode.None;
@@ -330,18 +337,31 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
         Image newStatusEffect = Instantiate(statusEffectPrefab);
         newStatusEffect.sprite = statusEffectIcons[0];
         newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
+        
         if (rbody.useGravity)
         {
             rbody.useGravity = false;
-            rbody.AddForce(Vector3.up * force, ForceMode.Impulse);
+            rbody.AddForce(Vector3.up * force * 0.5f, ForceMode.Impulse);
         }
-        rbody.angularVelocity = new Vector3(Random.value, Random.value, Random.value) * Random.Range(-force, force);
+        rbody.angularDrag = 1f;
+        // rbody.angularVelocity = new Vector3(Random.value, Random.value, Random.value) * Random.Range(-force, force);
         while(Time.time - startTime < duration)
         {
+            float vertical = Input.GetAxis("Vertical"); // Get player inputs
+            float horizontal = Input.GetAxis("Horizontal"); // Get player inputs
+            rbody.AddForce(HeadMove.transform.forward * vertical * speed / 2 + (HeadMove.transform.right * horizontal * speed / 2));
+            if(rbody.velocity.magnitude > speed / 2) { rbody.velocity = rbody.velocity.normalized * speed / 2; }
+            /*
+            Vector3 locVel = transform.InverseTransformDirection(rbody.velocity);
+            if (locVel.z > speed / 2)
+            {
+                rbody.velocity = transform.forward * vertical * speed / 2;
+            }*/
             newStatusEffect.fillAmount = 1f - (Time.time - startTime) / duration;
             yield return new WaitForEndOfFrame();
         }
         rbody.useGravity = true;
+        rbody.angularDrag = 0.05f;
         transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
         rbody.angularVelocity = Vector3.zero;
         rbody.constraints = RigidbodyConstraints.FreezeRotation;

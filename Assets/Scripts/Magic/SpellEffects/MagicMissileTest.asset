@@ -11,10 +11,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57d2ae229cdaf604293495bf1a0dcf53, type: 3}
   m_Name: MagicMissileTest
   m_EditorClassIdentifier: 
-  spellColor: {r: 1, g: 0, b: 0.93103456, a: 1}
+  spellColor: {r: 0.15862082, g: 0, b: 1, a: 1}
   spellDescription: -Fires a bolt of magic.
   damageLowerBound: 6
-  damageUpperBound: 12
+  damageUpperBound: 10
   projectile: {fileID: 4510573379921386, guid: 222ab9474b42391408b8b22f5cf88a82, type: 2}
   deathFX: {fileID: 4201116936921926, guid: 1a7579c4852d25f4aab18824714e50ea, type: 2}
   radius: 3

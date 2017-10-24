@@ -13,8 +13,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spellColor: {r: 0, g: 0.91724133, b: 1, a: 1}
   spellDescription: -Creates a vortex upon collision.
-  durationLowerBound: 10
-  durationUpperBound: 20
+  durationLowerBound: 6
+  durationUpperBound: 12
   maximumRange: 6
   Range: 9
   suckForce: 40

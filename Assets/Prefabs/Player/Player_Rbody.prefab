@@ -40,7 +40,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4538311786718598}
   - component: {fileID: 20746410469309124}
-  - component: {fileID: 92638476536091524}
   - component: {fileID: 124893126595389800}
   - component: {fileID: 81460231620734706}
   - component: {fileID: 114258855290452988}
@@ -139,7 +138,7 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingPath: 3
+  m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
@@ -149,7 +148,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
-  m_StereoMirrorMode: 0
 --- !u!20 &20955478858981828
 Camera:
   m_ObjectHideFlags: 1
@@ -185,7 +183,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
-  m_StereoMirrorMode: 0
 --- !u!23 &23123475400825770
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -195,6 +192,7 @@ MeshRenderer:
   m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -210,6 +208,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -273,13 +272,6 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1488424678075334}
   m_Enabled: 1
---- !u!92 &92638476536091524
-Behaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1419984802516096}
-  m_Enabled: 1
 --- !u!114 &114258855290452988
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -331,8 +323,8 @@ MonoBehaviour:
   health: 100
   healthBar: {fileID: 0}
   HeadMove: {fileID: 114258855290452988}
-  myAttackScript: {fileID: 0}
-  speed: 8
+  myAttackScript: {fileID: 114313648272072032}
+  speed: 10
   jumpForce: 10
   jumping: 0
   hurtTime: 0.5

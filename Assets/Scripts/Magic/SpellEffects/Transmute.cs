@@ -30,12 +30,12 @@ public class Transmute : SpellEffect
         Destroy(projFired.gameObject);
     }
 
-    public override void primaryCast(Transform caster, int power)
+    public override void primaryCast(Transform caster, Transform casterBody, int power)
     {
         Transform newMissile = Instantiate(projectile, caster.position + caster.forward * 0.5f, caster.rotation);
         ProjectileBehavior proj = newMissile.GetComponent<ProjectileBehavior>();
         proj.myCaster = caster;
-        proj.myCasterBody = caster.parent;
+        proj.myCasterBody = casterBody;
         proj.mySpellEffect = this;
         proj.power = power;
         proj.isPrimary = true;
@@ -55,12 +55,12 @@ public class Transmute : SpellEffect
         projFired.initiateDie(hit.contacts[0].point);
     }
 
-    public override void secondaryCast(Transform caster, int power)
+    public override void secondaryCast(Transform caster, Transform casterBody, int power)
     {
         Transform newMissile = Instantiate(projectile, caster.position + caster.forward * 0.5f, caster.rotation);
         ProjectileBehavior proj = newMissile.GetComponent<ProjectileBehavior>();
         proj.myCaster = caster;
-        proj.myCasterBody = caster.parent;
+        proj.myCasterBody = casterBody;
         proj.mySpellEffect = this;
         proj.power = power;
         Rigidbody rbody = newMissile.GetComponent<Rigidbody>();

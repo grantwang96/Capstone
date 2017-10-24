@@ -21,8 +21,8 @@ MonoBehaviour:
   force: 20
   delay: 3
   knockbackForce: 10
-  damageLowerBound: 5
-  damageUpperBound: 10
+  damageLowerBound: 8
+  damageUpperBound: 16
   mass: 0.5
   shrapnelCountLowerBound: 6
   shrapnelCountUpperBound: 10

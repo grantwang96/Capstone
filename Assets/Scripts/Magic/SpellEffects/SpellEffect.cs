@@ -8,8 +8,8 @@ public abstract class SpellEffect : ScriptableObject{
     public Color spellColor;
     public string spellDescription;
 
-    public abstract void primaryCast(Transform caster, int power);
-    public abstract void secondaryCast(Transform caster, int power);
+    public abstract void primaryCast(Transform caster, Transform casterbody, int power);
+    public abstract void secondaryCast(Transform caster, Transform casterbody, int power);
     public abstract void primaryEffect(ProjectileBehavior projFired, Collision hit);
     public abstract void secondaryEffect(ProjectileBehavior projFired, Collision hit);
     public abstract void setupSpellEffect(SpellBook spellBook);

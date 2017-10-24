@@ -36,12 +36,12 @@ public class MagicMissile : SpellEffect
         spellBook.spellEffectDescription = spellDescription;
     }
 
-    public override void primaryCast(Transform caster, int power)
+    public override void primaryCast(Transform caster, Transform casterBody, int power)
     {
         Transform newMissile = Instantiate(projectile, caster.position + caster.forward * 0.5f, caster.rotation);
         ProjectileBehavior proj = newMissile.GetComponent<ProjectileBehavior>();
         proj.myCaster = caster;
-        proj.myCasterBody = caster.parent;
+        proj.myCasterBody = casterBody;
         proj.mySpellCaster = caster.GetComponent<SpellCaster>();
         proj.mySpellEffect = this;
         proj.power = power;
@@ -53,12 +53,12 @@ public class MagicMissile : SpellEffect
         Debug.Log("Hit target for " + power + " damage!");
     }
 
-    public override void secondaryCast(Transform caster, int power)
+    public override void secondaryCast(Transform caster, Transform casterBody, int power)
     {
         Transform newMissile = Instantiate(projectile, caster.position + caster.forward * 0.5f, caster.rotation);
         ProjectileBehavior proj = newMissile.GetComponent<ProjectileBehavior>();
         proj.myCaster = caster;
-        proj.myCasterBody = caster.parent;
+        proj.myCasterBody = casterBody;
         proj.mySpellEffect = this;
         proj.power = power;
         proj.isPrimary = false;
@@ -71,6 +71,7 @@ public class MagicMissile : SpellEffect
     public override IEnumerator Die(Transform projFired,Vector3 point)
     {
         // Spawn Explosion
+        ProjectileBehavior proj = projFired.GetComponent<ProjectileBehavior>();
         Transform newExp = Instantiate(deathFX, point, Quaternion.identity);
         Collider[] colls = Physics.OverlapSphere(projFired.transform.position, radius);
         SpellCaster caster = projFired.GetComponent<ProjectileBehavior>().mySpellCaster;
@@ -79,10 +80,11 @@ public class MagicMissile : SpellEffect
             List<Damageable> potentialTargets = new List<Damageable>();
             for (int i = 0; i < colls.Length; i++)
             {
+                if(colls[i].transform == proj.myCasterBody) { continue; }
                 Damageable dam = colls[i].GetComponent<Damageable>();
                 if (dam != null)
                 {
-                    dam.TakeDamage(projFired.GetComponent<ProjectileBehavior>().power, colls[i].transform.position - projFired.transform.position, knockbackForce);
+                    dam.TakeDamage(proj.myCasterBody, proj.power, (colls[i].transform.position - proj.myCasterBody.position).normalized, knockbackForce);
                     potentialTargets.Add(dam);
                 }
                 else if (colls[i].attachedRigidbody != null)

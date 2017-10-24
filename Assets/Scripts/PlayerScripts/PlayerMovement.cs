@@ -161,7 +161,7 @@ public class PlayerMovement : MonoBehaviour, Fighter, Damageable {
 
     #region Damageable Implementations
 
-    public void TakeDamage(int damage, Vector3 dir, float force)
+    public void TakeDamage(Transform attacker, int damage, Vector3 dir, float force)
     {
         health -= damage;
         Debug.Log("OUCH! OH NO!");

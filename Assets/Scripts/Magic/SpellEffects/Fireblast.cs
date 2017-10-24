@@ -61,7 +61,7 @@ public class Fireblast : SpellEffect {
                 Damageable dam = colls[i].GetComponent<Damageable>();
                 if (dam != null)
                 {
-                    dam.TakeDamage(projFired.GetComponent<ProjectileBehavior>().power, colls[i].transform.position - projFired.transform.position, knockbackForce);
+                    dam.TakeDamage(proj.myCasterBody, projFired.GetComponent<ProjectileBehavior>().power, colls[i].transform.position - projFired.transform.position, knockbackForce);
                     potentialTargets.Add(dam);
                 }
                 else if (colls[i].attachedRigidbody != null)
@@ -76,12 +76,12 @@ public class Fireblast : SpellEffect {
         }
     }
 
-    public override void primaryCast(Transform caster, int power)
+    public override void primaryCast(Transform caster, Transform casterBody, int power)
     {
         Transform newMissile = Instantiate(projectile, caster.position + caster.forward * 0.5f, caster.rotation);
         ProjectileBehavior proj = newMissile.GetComponent<ProjectileBehavior>();
         proj.myCaster = caster;
-        proj.myCasterBody = caster.parent;
+        proj.myCasterBody = casterBody;
         proj.mySpellEffect = this;
         proj.mySpellCaster = caster.GetComponent<SpellCaster>();
         proj.power = power;
@@ -101,7 +101,7 @@ public class Fireblast : SpellEffect {
         projFired.initiateDie(hit.contacts[0].point);
     }
 
-    public override void secondaryCast(Transform caster, int power)
+    public override void secondaryCast(Transform caster, Transform casterBody, int power)
     {
         throw new NotImplementedException();
     }
@@ -121,6 +121,7 @@ public class Fireblast : SpellEffect {
     {
         Transform newPillarOfDoom = Instantiate(pillarOfDoom, projFired.transform.position, Quaternion.identity);
         newPillarOfDoom.GetComponent<PillarOfDoom>().damage = projFired.power;
+        newPillarOfDoom.GetComponent<PillarOfDoom>().myCaster = projFired.myCaster;
         int shrapCount = UnityEngine.Random.Range(shrapnelCountLowerBound, shrapnelCountUpperBound);
         float angInterval = 360 / shrapCount;
         for (int i = 0; i < shrapCount; i++)

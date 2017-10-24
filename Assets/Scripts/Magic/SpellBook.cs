@@ -28,46 +28,83 @@ public class SpellBook : MonoBehaviour, Interactable {
     public float sideEffectDuration;
 
     public MeshRenderer[] myBodyParts;
+    public Transform dieEffect;
+    public Transform pickUpEffect;
+    public bool dead;
+    public bool defaultSpell;
+
+    public Vector3 startPos;
 
     // Use this for initialization
     void Start () {
-        spellEffect = SpellManager.Instance.spellEffects[UnityEngine.Random.Range(0, SpellManager.Instance.spellEffects.Count)];
+        if(spellEffect == null)
+        {
+            spellEffect = SpellManager.Instance.spellEffects[UnityEngine.Random.Range(0, SpellManager.Instance.spellEffects.Count)];
+            sideEffect = SpellManager.Instance.sideEffects[UnityEngine.Random.Range(0, SpellManager.Instance.sideEffects.Count)];
+        }
         spellEffect.setupSpellEffect(this);
-        sideEffect = SpellManager.Instance.sideEffects[UnityEngine.Random.Range(0, SpellManager.Instance.sideEffects.Count)];
         sideEffect.setupSpell(this);
         GetComponent<ParticleSystem>().startColor = spellEffect.spellColor;
         worldCanvas = GameObject.Find("WorldCanvas").transform;
+        startPos = transform.position;
         startTime = Time.time;
+        if (defaultSpell) {
+            Transform user = GameObject.Find("PlayerHead").transform;
+            Transform userbody = GameObject.Find("Player_Rbody").transform;
+            PickUp(user, userbody, userbody.GetComponent<Fighter>(), userbody.GetComponent<Damageable>());
+        }
 	}
 
     void Update()
     {
+        /*
         if(Time.time - startTime >= lifeSpan && transform.parent == null
-           && myUser == null)
-        { StartCoroutine(Die()); }
+           && myUser == null && !dead)
+        { StartCoroutine(Die()); }*/
+        if (!dead)
+        {
+            
+        }
+        transform.Rotate(new Vector3(0, 15f * Time.deltaTime, 0));
+        float height = startPos.y + Mathf.PerlinNoise(Time.time * 1f, 0f);
+        Vector3 pos = transform.position;
+        pos.y = height;
+        transform.position = pos;
     }
 
     IEnumerator Die()
     {
+        dead = true;
+        float dieTime = 2f;
+        float startTime = Time.time;
         GetComponent<Collider>().enabled = false;
-        foreach(MeshRenderer mR in myBodyParts)
+        Transform newDieEffect = Instantiate(dieEffect, transform.position, Quaternion.identity);
+        newDieEffect.parent = transform;
+        destroySpellDetails();
+        foreach (MeshRenderer mR in myBodyParts)
         {
             mR.enabled = false;
         }
-        yield return new WaitForEndOfFrame();
-        destroySpellDetails();
+        while(Time.time - startTime < dieTime)
+        {
+            transform.position += Vector3.up * Time.deltaTime * 0.3f;
+            yield return new WaitForEndOfFrame();
+        }
+        newDieEffect.GetComponent<ParticleSystem>().Stop();
+        newDieEffect.parent = null;
+        Destroy(newDieEffect.gameObject, 3f);
         Destroy(gameObject);
     }
 
     public void primaryCast()
     {
-        spellEffect.primaryCast(myUser, power);
+        spellEffect.primaryCast(myUser, myUserBody, power);
         sideEffect.sideEffect(myUserFighter, myUserDamageable, sideEffectDuration, sideEffectSeverity);
     }
 
     public void secondaryCast()
     {
-        spellEffect.secondaryCast(myUser, power);
+        spellEffect.secondaryCast(myUser, myUserBody, power);
         sideEffect.sideEffect(myUserFighter, myUserDamageable, sideEffectDuration, sideEffectSeverity);
     }
 
@@ -84,16 +121,32 @@ public class SpellBook : MonoBehaviour, Interactable {
         power = newPower;
     }
 
-    public void PickUp(Transform user, Fighter newFighter, Damageable newDamageable)
+    public void PickUp(Transform user, Transform userbody, Fighter newFighter, Damageable newDamageable)
     {
+        if (dead) { return; }
         transform.parent = user;
         destroySpellDetails();
         myUser = user;
+        myUserBody = userbody;
         GetComponent<ParticleSystem>().Stop();
-        if(user.GetComponent<SpellCaster>() != null) { user.GetComponent<SpellCaster>().AddSpell(this); }
         myUserFighter = newFighter;
         myUserDamageable = newDamageable;
         GetComponent<Collider>().enabled = false;
+        dead = true;
+        StartCoroutine(pickUpAnimation(user));
+    }
+
+    IEnumerator pickUpAnimation(Transform user)
+    {
+        float startTime = Time.time;
+        while(Time.time - startTime < 0.2f)
+        {
+            transform.localPosition = Vector3.MoveTowards(transform.localPosition, Vector3.zero, 10f * Time.deltaTime);
+            transform.Rotate(new Vector3(0, 45f, 0));
+            yield return new WaitForEndOfFrame();
+        }
+        transform.localPosition = Vector3.zero;
+        if (user.GetComponent<SpellCaster>() != null) { user.GetComponent<SpellCaster>().AddSpell(this); }
         transform.Find("Book").gameObject.SetActive(false);
     }
 
@@ -106,7 +159,9 @@ public class SpellBook : MonoBehaviour, Interactable {
         myUserFighter = null;
         myUserDamageable = null;
         transform.Find("Book").gameObject.SetActive(true);
+        dead = false;
         startTime = Time.time;
+        StartCoroutine(Die());
     }
     
     public Transform createSpellDetails(Transform cameraHead)

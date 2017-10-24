@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface Damageable
 {
-    void TakeDamage(int damage, Vector3 dir, float force);
+    void TakeDamage(Transform attacker, int damage, Vector3 dir, float force);
     GameObject getGameObject();
     void InitiateTransmutation(float duration, GameObject replacement);
     void setTransmutable(bool newBool);
@@ -34,6 +34,6 @@ public interface SpellCaster
 
 public interface Interactable
 {
-    void PickUp(Transform user, Fighter newFighter, Damageable newDamageable);
+    void PickUp(Transform user, Transform userbody, Fighter newFighter, Damageable newDamageable);
     void Drop();
 }

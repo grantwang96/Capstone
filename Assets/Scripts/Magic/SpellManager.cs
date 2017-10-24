@@ -19,11 +19,15 @@ public class SpellManager : MonoBehaviour {
     public float refreshTime;
 
     bool rechargingSpellSpawn;
+    public bool isSpawning;
 
     void Awake()
     {
         Instance = this;
-        StartCoroutine(spawnSpell());
+        if (isSpawning)
+        {
+            StartCoroutine(spawnSpell());
+        }
     }
 
     void Update()
@@ -58,5 +62,11 @@ public class SpellManager : MonoBehaviour {
             list[i] = list[rand];
             list[rand] = temp;
         }
+    }
+
+    public void dropSpellBook(Vector3 position)
+    {
+        Vector3 modifiedPosition = new Vector3(position.x, 1.5f, position.z);
+        Instantiate(spellBookPrefab, modifiedPosition, Quaternion.identity);
     }
 }

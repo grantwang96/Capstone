@@ -22,9 +22,11 @@ public class GravityWellVortex : MonoBehaviour {
     List<Transform> trapped = new List<Transform>();
     public Transform explosionPrefab;
 
+    public Transform myOwner;
+
 	// Use this for initialization
 	void Start () {
-        range = 0.01f;
+        range = 0.33f;
         rangeFinder = GetComponent<SphereCollider>();
         effects = GetComponent<ParticleSystem>();
         rangeFinder.radius = range;
@@ -63,6 +65,7 @@ public class GravityWellVortex : MonoBehaviour {
         {
             foreach(Transform loser in trapped)
             {
+                if(loser == null) { continue; }
                 Damageable dam = loser.GetComponent<Damageable>();
                 dam.vortexGrab(transform, force, Time.time - startTime);
             }
@@ -89,7 +92,12 @@ public class GravityWellVortex : MonoBehaviour {
 
     void Die()
     {
-        foreach(Transform loser in trapped) { loser.parent = null; }
+        foreach(Transform loser in trapped) {
+            if(loser != null)
+            {
+                loser.parent = null;
+            }
+        }
         trapped.Clear();
         // Small explosion to send all objects up
         Collider[] colls = Physics.OverlapSphere(transform.position, 3f);
@@ -100,7 +108,7 @@ public class GravityWellVortex : MonoBehaviour {
             if(dam != null)
             {
                 Vector3 dir = (coll.transform.position - transform.position).normalized;
-                dam.TakeDamage(0, dir, force);
+                dam.TakeDamage(myOwner, 0, dir, force);
             }
         }
         Destroy(newExp.gameObject, 3f);

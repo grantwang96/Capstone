@@ -66,7 +66,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1770027073686382}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.2, z: 6}
+  m_LocalPosition: {x: 1.4683332, y: 0, z: -0.48389482}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4722239827447348}
@@ -85,10 +85,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 5
-  radius: 3
+  radius: 4
   force: 10
   playerHead: {fileID: 0}
   shakeForce: 0.5
+  myCaster: {fileID: 0}
+  partSpeed: 0
 --- !u!198 &198034395034149530
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -148,7 +150,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -1494415748
+  randomSeed: -503077004
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -3415,7 +3417,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 1950393870
+  randomSeed: 1648693093
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -3463,7 +3465,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 15
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -3858,7 +3860,7 @@ ParticleSystem:
   ShapeModule:
     serializedVersion: 5
     enabled: 1
-    type: 10
+    type: 5
     angle: 25
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
@@ -3866,7 +3868,7 @@ ParticleSystem:
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: -90, y: 0, z: 0}
-    m_Scale: {x: 1, y: 1, z: 1}
+    m_Scale: {x: 3, y: 3, z: 1}
     placementMode: 0
     m_Mesh: {fileID: 0}
     m_MeshRenderer: {fileID: 0}
@@ -4470,7 +4472,7 @@ ParticleSystem:
     sprites:
     - sprite: {fileID: 0}
   VelocityModule:
-    enabled: 1
+    enabled: 0
     x:
       serializedVersion: 2
       minMaxState: 0

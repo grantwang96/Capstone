@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
-    const int MAX_HEALTH = 20;
+    const int MAX_HEALTH = 10;
     public int health;
     public float hurtTime;
     bool hurt;
@@ -15,6 +15,7 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
 
     public int damage;
     public float speed;
+    bool ishurting;
     bool dead;
 
     bool transmuted = false;
@@ -42,6 +43,7 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
         freeMove = true;
         hurt = false;
         dead = false;
+        ishurting = false;
     }
 
     // Update is called once per frame
@@ -52,8 +54,8 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
         Vector3 myPos = new Vector3(transform.position.x, 0, transform.position.z);
         if (/*freeMove && */!isSeduced && !transmuted)
         {
-            rbody.MovePosition(transform.position + transform.forward * speed * Time.deltaTime);
-            transform.rotation = Quaternion.LookRotation(playerPos - myPos);
+            transform.forward = (playerPos - myPos);
+            rbody.MovePosition(rbody.position + transform.forward * speed * Time.deltaTime);
         }
     }
 
@@ -68,7 +70,7 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
         if (dam != null && coll.collider.transform == attackTarget)
         {
             Vector3 dir = (attackTarget.position - transform.position).normalized + Vector3.up * 0.25f;
-            attackTarget.GetComponent<Damageable>().TakeDamage(damage, dir, 10f);
+            attackTarget.GetComponent<Damageable>().TakeDamage(transform, damage, dir, 10f);
         }
     }
 
@@ -90,10 +92,11 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
         transmutable = newBool;
     }
 
-    public void TakeDamage(int damage, Vector3 dir, float force)
+    public void TakeDamage(Transform attacker, int damage, Vector3 dir, float force)
     {
         if (hurt) { return; }
         health -= damage;
+        knockBack(dir, force);
         if (health <= 0)
         {
             dead = true;
@@ -108,15 +111,25 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
                 dokiFX.parent = null;
                 Destroy(dokiFX.gameObject, dFX.startLifetime);
             }
+            if(UnityEngine.Random.value < 0.7f) { SpellManager.Instance.dropSpellBook(transform.position); }
             Destroy(gameObject);
         }
         StartCoroutine(recoveryTime());
     }
 
+    IEnumerator tempHurt()
+    {
+        yield return new WaitForSeconds(0.3f);
+    }
+
     IEnumerator recoveryTime()
     {
         hurt = true;
+        MeshRenderer mr = GetComponentInChildren<MeshRenderer>();
+        Color originColor = mr.material.color;
+        mr.material.color = Color.red;
         yield return new WaitForSeconds(hurtTime);
+        mr.material.color = originColor;
         hurt = false;
     }
 
@@ -213,6 +226,7 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
     {
         freeMove = false;
         float startTime = Time.time;
+        GetComponent<MeshRenderer>().material.color = new Color(255, 0, 155);
         while(Time.time - startTime < duration)
         {
             if(gameObject == null) {
@@ -236,6 +250,7 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
             dokiFX.parent = null;
             Destroy(dokiFX.gameObject, dFX.startLifetime);
         }
+        GetComponent<MeshRenderer>().material.color = Color.red;
     }
 
     void processSeducedMovement(GameObject target)
@@ -276,4 +291,5 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
             attackTarget = target.getGameObject().transform;
         }
     }
+    
 }

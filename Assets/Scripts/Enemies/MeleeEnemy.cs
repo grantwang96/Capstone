@@ -48,7 +48,7 @@ public class MeleeEnemy : MonoBehaviour, Damageable, Fighter {
         if(coll.collider.transform == player)
         {
             Vector3 dir = player.transform.position - transform.position;
-            player.GetComponent<Damageable>().TakeDamage(damage, dir, force);
+            player.GetComponent<Damageable>().TakeDamage(transform, damage, dir, force);
         }else if(coll.collider.attachedRigidbody != null)
         {
             Vector3 dir = coll.collider.transform.position - transform.position;
@@ -74,10 +74,11 @@ public class MeleeEnemy : MonoBehaviour, Damageable, Fighter {
         transmutable = newBool;
     }
 
-    public void TakeDamage(int damage, Vector3 dir, float force)
+    public void TakeDamage(Transform attacker, int damage, Vector3 dir, float force)
     {
         health -= damage;
         StartCoroutine(knockBack(dir));
+        
         if (health <= 0)
         {
             GameObject.Find("Scorekeeper").GetComponent<ScoreKeeper>().incrementScore();
