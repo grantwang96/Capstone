@@ -13,6 +13,7 @@ public class Drunk : SideEffect {
     {
         spellBook.sideEffectDuration = UnityEngine.Random.Range(durationLowerBound, durationUpperBound);
         spellBook.sideEffectDescription = sideEffectDescription;
+        base.setupSpell(spellBook);
     }
 
     public override void sideEffect(Fighter userFight, Damageable userDam, float duration, float severity)

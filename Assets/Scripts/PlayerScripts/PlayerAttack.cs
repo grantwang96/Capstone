@@ -33,6 +33,7 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
         if (Input.GetMouseButtonDown(0) && spellInventory.Count > 0)
         {
             spellInventory[currSpell].primaryCast();
+            updateCurrSpellInfo();
         }
 	}
 
@@ -97,16 +98,16 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
         if (coll.GetComponent<SpellBook>() != null)
         {
             touchedSpell = coll.GetComponent<SpellBook>();
-            hoverSpellDetails = touchedSpell.createSpellDetails(transform);
-            hoverSpellDetails.GetComponent<RectTransform>().forward = transform.forward;
+            // hoverSpellDetails = touchedSpell.createSpellDetails(transform);
+            // hoverSpellDetails.GetComponent<RectTransform>().forward = transform.forward;
         }
     }
 
     void OnTriggerStay(Collider coll)
     {
-        if(coll.GetComponent<SpellBook>() == touchedSpell && hoverSpellDetails != null)
+        if(coll.GetComponent<SpellBook>() == touchedSpell)
         {
-            hoverSpellDetails.GetComponent<RectTransform>().forward = transform.forward;
+            touchedSpell.hovered();
         }
         if (Input.GetMouseButtonDown(1) && coll.GetComponent<Interactable>() != null)
         {
@@ -156,10 +157,22 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
 
     void updateCurrSpellInfo()
     {
+        if (spellInventory.Count == 0)
+        {
+            currSpell = 0;
+            heldWeaponSlot.transform.Find("Title").GetComponent<Text>().text = "Nothing held";
+            heldWeaponSlot.transform.Find("Spell Effect").GetComponent<Text>().text = "-None";
+            heldWeaponSlot.transform.Find("Side Effect").GetComponent<Text>().text = "-None";
+            heldWeaponSlot.transform.Find("Ammo").GetComponent<Text>().text = "0/0";
+            return;
+        }
+        if (currSpell >= spellInventory.Count) { currSpell = spellInventory.Count - 1; }
         heldWeaponSlot.transform.Find("Spell Effect").GetComponent<Text>().text =
             spellInventory[currSpell].spellEffectDescription;
         heldWeaponSlot.transform.Find("Side Effect").GetComponent<Text>().text =
             spellInventory[currSpell].sideEffectDescription;
+        heldWeaponSlot.transform.Find("Ammo").GetComponent<Text>().text = spellInventory[currSpell].getAmmo() + "/"
+            + spellInventory[currSpell].maxAmmo;
     }
 
     public void addSeductionObject(Damageable loser)

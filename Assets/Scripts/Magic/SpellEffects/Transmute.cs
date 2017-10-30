@@ -84,5 +84,6 @@ public class Transmute : SpellEffect
     {
         spellBook.setPower((int)UnityEngine.Random.Range(durationLowerBound, durationUpperBound));
         spellBook.spellEffectDescription = spellDescription;
+        base.setupSpellEffect(spellBook);
     }
 }

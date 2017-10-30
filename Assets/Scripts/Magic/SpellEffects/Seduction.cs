@@ -81,5 +81,6 @@ public class Seduction : SpellEffect
     {
         spellBook.setPower(UnityEngine.Random.Range(durationLowerBound, durationUpperBound));
         spellBook.spellEffectDescription = spellDescription;
+        base.setupSpellEffect(spellBook);
     }
 }

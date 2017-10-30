@@ -115,6 +115,7 @@ public class Fireblast : SpellEffect {
     {
         spellBook.setPower(UnityEngine.Random.Range(damageLowerBound, damageUpperBound));
         spellBook.spellEffectDescription = spellDescription;
+        base.setupSpellEffect(spellBook);
     }
 
     void mainBlast(ProjectileBehavior projFired)

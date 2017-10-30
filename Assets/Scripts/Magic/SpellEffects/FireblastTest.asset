@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Name: FireblastTest
   m_EditorClassIdentifier: 
   spellColor: {r: 0.9862069, g: 1, b: 0, a: 1}
-  spellDescription: -Completely harmless, tiny flame.
+  spellDescription: -Releases a pillar of fire
+  ammo: 3
   projectile: {fileID: 4510573379921386, guid: 222ab9474b42391408b8b22f5cf88a82, type: 2}
   pillarOfDoom: {fileID: 4901662558591376, guid: 9e9f2e097fba84b49abe803cb23aab01,
     type: 2}

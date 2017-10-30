@@ -16,6 +16,7 @@ public class Flying : SideEffect
         spellBook.sideEffectDuration = UnityEngine.Random.Range(durationLowerBound, durationUpperBound);
         spellBook.sideEffectSeverity = force;
         spellBook.sideEffectDescription = sideEffectDescription;
+        base.setupSpell(spellBook);
     }
 
     public override void sideEffect(Fighter userFight, Damageable userDam, float duration, float severity)

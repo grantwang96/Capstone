@@ -17,6 +17,7 @@ public class Slow : SideEffect
         spellBook.sideEffectDuration = UnityEngine.Random.Range(durationLowerBound, durationUpperBound);
         spellBook.sideEffectSeverity = UnityEngine.Random.Range(severityLowerBound, severityUpperBound);
         spellBook.sideEffectDescription = sideEffectDescription;
+        base.setupSpell(spellBook);
     }
 
     public override void sideEffect(Fighter userFight, Damageable userDam, float duration, float severity)

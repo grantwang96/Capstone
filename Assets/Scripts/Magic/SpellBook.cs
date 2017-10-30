@@ -16,6 +16,7 @@ public class SpellBook : MonoBehaviour, Interactable {
 
     public string spellEffectDescription;
     public string sideEffectDescription;
+    public string spellTitle;
     public Transform spellDetailsPrefab;
     public Transform spellDetails;
     public Transform worldCanvas;
@@ -31,9 +32,16 @@ public class SpellBook : MonoBehaviour, Interactable {
     public Transform dieEffect;
     public Transform pickUpEffect;
     public bool dead;
+    public bool dying;
     public bool defaultSpell;
 
     public Vector3 startPos;
+
+    public int maxAmmo;
+    [SerializeField] private int ammo;
+    public void setAmmo(int newAmmo) { ammo = newAmmo; }
+    public int getAmmo() { return ammo; }
+    public void useAmmo() { ammo -= 1; }
 
     // Use this for initialization
     void Start () {
@@ -44,7 +52,7 @@ public class SpellBook : MonoBehaviour, Interactable {
         }
         spellEffect.setupSpellEffect(this);
         sideEffect.setupSpell(this);
-        GetComponent<ParticleSystem>().startColor = spellEffect.spellColor;
+        // GetComponent<ParticleSystem>().startColor = spellEffect.spellColor;
         worldCanvas = GameObject.Find("WorldCanvas").transform;
         startPos = transform.position;
         startTime = Time.time;
@@ -53,28 +61,36 @@ public class SpellBook : MonoBehaviour, Interactable {
             Transform userbody = GameObject.Find("Player_Rbody").transform;
             PickUp(user, userbody, userbody.GetComponent<Fighter>(), userbody.GetComponent<Damageable>());
         }
+        dead = false;
+        dying = false;
+        ammo = maxAmmo;
 	}
 
     void Update()
     {
-        /*
-        if(Time.time - startTime >= lifeSpan && transform.parent == null
-           && myUser == null && !dead)
-        { StartCoroutine(Die()); }*/
+        if (ammo <= 0 && !dying)
+        {
+            dying = true;
+            StartCoroutine(Die());
+        }
+    }
+
+    public void hovered()
+    {
         if (!dead)
         {
-            
+            transform.Rotate(new Vector3(0, 30f * Time.deltaTime, 0));
+            float height = startPos.y + Mathf.PerlinNoise(Time.time * 1f, 0f) - 0.5f;
+            Vector3 pos = transform.position;
+            pos.y = height;
+            transform.position = pos;
         }
-        transform.Rotate(new Vector3(0, 15f * Time.deltaTime, 0));
-        float height = startPos.y + Mathf.PerlinNoise(Time.time * 1f, 0f);
-        Vector3 pos = transform.position;
-        pos.y = height;
-        transform.position = pos;
     }
 
     IEnumerator Die()
     {
         dead = true;
+        myUser.GetComponent<SpellCaster>().DropSpell(this);
         float dieTime = 2f;
         float startTime = Time.time;
         GetComponent<Collider>().enabled = false;
@@ -100,12 +116,14 @@ public class SpellBook : MonoBehaviour, Interactable {
     {
         spellEffect.primaryCast(myUser, myUserBody, power);
         sideEffect.sideEffect(myUserFighter, myUserDamageable, sideEffectDuration, sideEffectSeverity);
+        ammo -= 1;
     }
 
     public void secondaryCast()
     {
         spellEffect.secondaryCast(myUser, myUserBody, power);
         sideEffect.sideEffect(myUserFighter, myUserDamageable, sideEffectDuration, sideEffectSeverity);
+        ammo -= 1;
     }
 
     public void sideEffectCast()
@@ -161,11 +179,13 @@ public class SpellBook : MonoBehaviour, Interactable {
         transform.Find("Book").gameObject.SetActive(true);
         dead = false;
         startTime = Time.time;
-        StartCoroutine(Die());
+        // StartCoroutine(Die());
     }
     
     public Transform createSpellDetails(Transform cameraHead)
     {
+        if (dead) { return null; }
+        /*
         Vector3 dir = transform.position - cameraHead.position;
         Quaternion lookDir = Quaternion.LookRotation(dir);
         spellDetails = Instantiate(spellDetailsPrefab, transform.position + Vector3.up, lookDir);
@@ -173,6 +193,8 @@ public class SpellBook : MonoBehaviour, Interactable {
         spellDetails.Find("SpellEffectDescription").GetComponent<Text>().text = spellEffectDescription;
         spellDetails.Find("SideEffectDescription").GetComponent<Text>().text = sideEffectDescription;
         return spellDetails;
+        */
+        return null;
     }
 
     public void destroySpellDetails()

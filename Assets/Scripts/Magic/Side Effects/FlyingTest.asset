@@ -11,6 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 312eeec3833c6b74ba3a9d3cb23f8437, type: 3}
   m_Name: FlyingTest
   m_EditorClassIdentifier: 
+  ammoBonus: 3
+  sideEffectColor: {r: 0, g: 0.91724133, b: 1, a: 1}
   sideEffectDescription: -May cause lightheadedness.
   affectIcon: {fileID: 21300000, guid: 29b3db2f06d92314281858c36caf424c, type: 3}
   durationLowerBound: 8

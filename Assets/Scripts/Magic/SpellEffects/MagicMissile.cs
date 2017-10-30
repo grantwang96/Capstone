@@ -34,6 +34,7 @@ public class MagicMissile : SpellEffect
     {
         spellBook.setPower(UnityEngine.Random.Range(damageLowerBound, damageUpperBound));
         spellBook.spellEffectDescription = spellDescription;
+        base.setupSpellEffect(spellBook);
     }
 
     public override void primaryCast(Transform caster, Transform casterBody, int power)

@@ -17,6 +17,7 @@ public class CameraMovement : MonoBehaviour {
     public Vector3 originPosition;
 
     public Transform affectedYTurn;
+    public int normalMove = 1;
 
     public bool separateControl
     {
@@ -44,8 +45,8 @@ public class CameraMovement : MonoBehaviour {
         // if (Input.GetKeyDown(KeyCode.U)) { StartCoroutine(shakeCamera(0.3f)); }
 
         // 1. get mouse input data
-        float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * 150f; // horizontal mousespeed
-        float mouseY = Input.GetAxis("Mouse Y") * Time.deltaTime * 150f; // vertical mousespeed
+        float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * 150f * normalMove; // horizontal mousespeed
+        float mouseY = Input.GetAxis("Mouse Y") * Time.deltaTime * 150f * normalMove; // vertical mousespeed
 
         upDownLook -= mouseY; // minus-equals un-inverts the mouse-look-y
         upDownLook = Mathf.Clamp(upDownLook, -80f, 80f); // constrain look 80 degrees up or down
@@ -55,14 +56,16 @@ public class CameraMovement : MonoBehaviour {
         transform.localEulerAngles = new Vector3(upDownLook, transform.localEulerAngles.y, 0f);
         Vector3 bodyTurn = affectedYTurn.localEulerAngles + new Vector3(0, mouseX, 0);
         affectedYTurn.localEulerAngles = bodyTurn;
-
+        
         if (drunk)
         {
+            /*
             upDownLook += Mathf.PerlinNoise(Random.value * -5f, 0f) * 0.5f;
             float turnMod = (Mathf.PerlinNoise(Random.value * -5f, Random.value * 5f) * 4f) - 2f;
             upDownLook = Mathf.Clamp(upDownLook, -80f, 80f); // constrain look 80 degrees up or down
             transform.localEulerAngles = new Vector3(upDownLook, transform.localEulerAngles.y, 0f);
             affectedYTurn.localEulerAngles = affectedYTurn.localEulerAngles + new Vector3(0, turnMod, 0);
+            */
         }
     }
 

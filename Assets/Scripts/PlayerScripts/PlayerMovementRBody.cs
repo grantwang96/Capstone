@@ -88,7 +88,7 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
             Vector3 moveDir = ((transform.forward * vertical * speed) + (transform.right * horizontal * speed));
             if(moveDir != Vector3.zero)
             {
-                rbody.MovePosition(rbody.position + moveDir * Time.deltaTime * slownessSeverity);
+                rbody.MovePosition(rbody.position + moveDir * Time.deltaTime * slownessSeverity * drunkMod);
                 // transform.position += moveDir * Time.deltaTime * slownessSeverity;
             }
         }
@@ -159,21 +159,36 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
 
     public void Drunk(float duration)
     {
-        if (drunkness == null) { drunkness = StartCoroutine(processDrunk(duration)); }
+        if (drunkness != null) { StopCoroutine(drunkness); }
+        drunkness = StartCoroutine(processDrunk(duration));
     }
     IEnumerator processDrunk(float duration)
     {
         float startTime = Time.time;
         DrunkHead.SetActive(true);
         HeadMove.drunk = true;
-        Image newStatusEffect = Instantiate(statusEffectPrefab);
-        newStatusEffect.sprite = statusEffectIcons[1];
-        newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
+        Transform statEffectObject = statusEffectBar.transform.Find("drunk");
+        Image newStatusEffect;
+        if(statEffectObject == null)
+        {
+            newStatusEffect = Instantiate(statusEffectPrefab);
+            newStatusEffect.transform.name = "drunk";
+            newStatusEffect.sprite = statusEffectIcons[1];
+            newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
+        }
+        else
+        {
+            newStatusEffect = statEffectObject.GetComponent<Image>();
+        }
+        HeadMove.normalMove = -1;
+        drunkMod = -1;
         while (Time.time - startTime < duration)
         {
             newStatusEffect.fillAmount = 1f - (Time.time - startTime) / duration;
             yield return new WaitForEndOfFrame();
         }
+        HeadMove.normalMove = 1;
+        drunkMod = 1;
         DrunkHead.SetActive(false);
         HeadMove.drunk = false;
         Destroy(newStatusEffect.gameObject);
@@ -183,21 +198,29 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
     }
     public void Slow(float duration, float severity)
     {
-        if (slowness == null) { slowness = StartCoroutine(processSlow(duration, severity)); }
+        if (slowness != null) { StopCoroutine(slowness); }
+        slowness = StartCoroutine(processSlow(duration, severity));
     }
     IEnumerator processSlow(float duration, float severity)
     {
         slownessSeverity *= severity;
         if(slownessSeverity < 0.25f) { slownessSeverity = 0.25f; }
-        // StartCoroutine(recoverSpeed(duration));
         float startTime = Time.time;
-        Debug.Log("Recovering Speed");
-        Image newStatusEffect = Instantiate(statusEffectPrefab);
-        newStatusEffect.sprite = statusEffectIcons[2];
-        newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
+        Transform statEffectObj = statusEffectBar.transform.Find("Slow");
+        Image newStatusEffect;
+        if(statEffectObj == null)
+        {
+            newStatusEffect = Instantiate(statusEffectPrefab);
+            newStatusEffect.transform.name = "Slow";
+            newStatusEffect.sprite = statusEffectIcons[2];
+            newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
+        }
+        else
+        {
+            newStatusEffect = statEffectObj.GetComponent<Image>();
+        }
         float originSeverity = slownessSeverity;
         float full = 1f - slownessSeverity;
-        Debug.Log("Duration is: " + duration);
         while (Time.time - startTime < duration)
         {
             slownessSeverity = originSeverity + ((Time.time - startTime) / duration) * full;
@@ -325,7 +348,8 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
 
     public void fly(float force, float duration)
     {
-        if (flight == null) { flight = StartCoroutine(processFlying(force, duration)); }
+        if (flight != null) { StopCoroutine(flight); }
+        flight = StartCoroutine(processFlying(force, duration));
     }
 
     IEnumerator processFlying(float force, float duration)
@@ -334,10 +358,18 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
         isFlying = true;
         HeadMove.separateControl = false;
         rbody.constraints = RigidbodyConstraints.None;
-        Image newStatusEffect = Instantiate(statusEffectPrefab);
-        newStatusEffect.sprite = statusEffectIcons[0];
-        newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
-        
+        Transform statEffectObj = statusEffectBar.transform.Find("Flight");
+        Image newStatusEffect;
+        if(statEffectObj == null) {
+            newStatusEffect = Instantiate(statusEffectPrefab);
+            newStatusEffect.transform.name = "Flight";
+            newStatusEffect.sprite = statusEffectIcons[0];
+            newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
+        }
+        else
+        {
+            newStatusEffect = statEffectObj.GetComponent<Image>();
+        }
         if (rbody.useGravity)
         {
             rbody.useGravity = false;

@@ -11,6 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46de25e3aec4fce4e81c5f4d850157d8, type: 3}
   m_Name: Blind
   m_EditorClassIdentifier: 
+  ammoBonus: 6
   sideEffectDescription: -May cause obscured vision.
   affectIcon: {fileID: 21300000, guid: 54cefcaaa88877b459f50d65bcdffd69, type: 3}
   durationLowerBound: 3

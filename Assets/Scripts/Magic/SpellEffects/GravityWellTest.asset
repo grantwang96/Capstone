@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Name: GravityWellTest
   m_EditorClassIdentifier: 
   spellColor: {r: 0, g: 0.91724133, b: 1, a: 1}
-  spellDescription: -Creates a vortex upon collision.
+  spellDescription: -Creates a powerful vortex.
+  ammo: 10
   durationLowerBound: 6
   durationUpperBound: 12
   maximumRange: 6

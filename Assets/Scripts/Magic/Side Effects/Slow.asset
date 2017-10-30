@@ -11,6 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd31dde41cb141468a37080ec3d2308, type: 3}
   m_Name: Slow
   m_EditorClassIdentifier: 
+  ammoBonus: 5
+  sideEffectColor: {r: 1, g: 0, b: 0, a: 1}
   sideEffectDescription: -May cause laziness.
   affectIcon: {fileID: 21300000, guid: 5c099b352ba5c6e478857ceff3e1ae1b, type: 3}
   durationLowerBound: 5
