@@ -20,6 +20,8 @@ public interface Fighter
     void Blind(float duration, float severity);
     void Drunk(float duration);
     void Slow(float duration, float severity);
+
+    float getSightRange();
 }
 
 public interface SpellCaster
@@ -36,4 +38,11 @@ public interface Interactable
 {
     void PickUp(Transform user, Transform userbody, Fighter newFighter, Damageable newDamageable);
     void Drop();
+}
+
+public interface NPCStateMachine
+{
+    void Enter(Movement owner);
+    void Execute();
+    void Exit();
 }

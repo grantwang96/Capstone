@@ -247,6 +247,11 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
         slownessSeverity = 1f;
         slowness = null;
     }
+
+    public float getSightRange()
+    {
+        return 0f;
+    }
     #endregion
 
     #region Damageable Implementations

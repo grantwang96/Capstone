@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
-    const int MAX_HEALTH = 10;
+    public int MAX_HEALTH = 10;
     public int health;
     public float hurtTime;
     bool hurt;
@@ -291,5 +291,9 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
             attackTarget = target.getGameObject().transform;
         }
     }
-    
+
+    public float getSightRange()
+    {
+        throw new NotImplementedException();
+    }
 }

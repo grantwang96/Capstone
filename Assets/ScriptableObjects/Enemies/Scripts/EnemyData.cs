@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu (fileName = "EnemyDataObject")]
 public class EnemyData : ScriptableObject {
 
-    [Range(50, 200)]
+    [Range(5, 700)]
     public int health;
     public CombatType myType;
+
+    public NPCStateMachine startingState;
 
     public enum CombatType
     {
@@ -18,8 +19,11 @@ public class EnemyData : ScriptableObject {
         Support,
     }
 
-    public void doTheThing()
+    public virtual void setup(Movement owner)
     {
-        // Debug.Log("I did a thing!");
+        if(startingState != null) {
+            owner.changeState(startingState);
+        }
+        owner.GetComponent<damageable>().max_health = health;
     }
 }

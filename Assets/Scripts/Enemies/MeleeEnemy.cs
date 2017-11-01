@@ -185,4 +185,9 @@ public class MeleeEnemy : MonoBehaviour, Damageable, Fighter {
     {
         throw new NotImplementedException();
     }
+
+    public float getSightRange()
+    {
+        throw new NotImplementedException();
+    }
 }

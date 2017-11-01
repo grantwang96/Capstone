@@ -302,5 +302,10 @@ public class PlayerMovement : MonoBehaviour, Fighter, Damageable {
     {
         throw new NotImplementedException();
     }
+
+    public float getSightRange()
+    {
+        throw new NotImplementedException();
+    }
     #endregion
 }
