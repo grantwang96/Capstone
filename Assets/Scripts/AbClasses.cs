@@ -96,12 +96,10 @@ public abstract class damageable : MonoBehaviour
 
 public abstract class fighter : MonoBehaviour
 {
-    public float sightRange;
-
     public virtual void Blind(float duration, float severity)
     {
         Movement myOwnerMove = GetComponent<Movement>();
-        sightRange = 0;
+        myOwnerMove.sightRange = 0f;
         myOwnerMove.changeState(new MeleeEnemyIdle());
     }
     public virtual void Drunk(float duration)
@@ -117,30 +115,35 @@ public abstract class fighter : MonoBehaviour
 
 public abstract class Movement : MonoBehaviour
 {
-    public float originSpeed;
+    public float baseSpeed;
+    public float maxSpeed;
     public float currSpeed;
+    public float sightRange;
+    public float sightAngle;
 
     public Transform Head;
 
     public Rigidbody rbody;
+    public EnemyData blueprint;
     NPCStateMachine currState;
 
     public Transform attackTarget;
 
-    void Start()
+    public virtual void Start()
     {
 
     }
 
-    void Update()
+    public virtual void Update()
     {
         processMovement();
     }
 
     public virtual void setup()
     {
+        blueprint.setup(this);
         rbody = GetComponent<Rigidbody>();
-        currSpeed = originSpeed;
+        currSpeed = baseSpeed;
         // setup currState
     }
 
@@ -149,10 +152,47 @@ public abstract class Movement : MonoBehaviour
         if(currState != null) { currState.Execute(); }
     }
 
+    public virtual bool checkView()
+    {
+        if(attackTarget == null) { return false; }
+        float dist = Vector3.Distance(transform.position, attackTarget.position);
+        float angle = Vector3.Angle(Head.forward, attackTarget.position - Head.position);
+        if(dist <= sightRange && angle <= sightAngle)
+        {
+            RaycastHit rayHit;
+            if (Physics.Raycast(transform.position, (attackTarget.position - transform.position).normalized, out rayHit, sightRange))
+            {
+                if (rayHit.collider.transform == attackTarget)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public virtual void changeState(NPCStateMachine newState)
     {
         if(currState != null) { currState.Exit(); }
         currState = newState;
         currState.Enter(this);
+    }
+}
+
+public abstract class NPCState
+{
+    public virtual void Enter()
+    {
+
+    }
+
+    public virtual void Execute()
+    {
+
+    }
+
+    public virtual void Exit()
+    {
+
     }
 }

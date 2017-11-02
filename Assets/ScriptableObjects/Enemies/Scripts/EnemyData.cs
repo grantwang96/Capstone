@@ -6,6 +6,12 @@ public class EnemyData : ScriptableObject {
 
     [Range(5, 700)]
     public int health;
+    public float baseSpeed;
+    public float maxSpeed;
+
+    [Range(0, 100)] public float sightRange;
+    [Range(0, 90)] public float sightAngle;
+
     public CombatType myType;
 
     public NPCStateMachine startingState;
@@ -25,5 +31,7 @@ public class EnemyData : ScriptableObject {
             owner.changeState(startingState);
         }
         owner.GetComponent<damageable>().max_health = health;
+        owner.sightRange = sightRange;
+        owner.sightAngle = sightAngle;
     }
 }

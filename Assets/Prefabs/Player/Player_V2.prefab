@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 136103011673329616}
   - component: {fileID: 23304063655680872}
   - component: {fileID: 54423109765579062}
+  - component: {fileID: 114910091743645520}
   m_Layer: 0
   m_Name: Player_V2
   m_TagString: Untagged
@@ -92,7 +93,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1215399757227134}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4745035832967016}
@@ -312,7 +313,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1834148990156392}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d6b07ab88e088c458b8b57305e353c8, type: 3}
   m_Name: 
@@ -323,6 +324,27 @@ MonoBehaviour:
   hoverWeaponSlot: {fileID: 0}
   hoverSpellDetails: {fileID: 0}
   touchedSpell: {fileID: 0}
+--- !u!114 &114910091743645520
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1215399757227134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bde7644a21da18849b105e97bb62e7d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseSpeed: 10
+  maxSpeed: 10
+  currSpeed: 10
+  Head: {fileID: 4745035832967016}
+  rbody: {fileID: 0}
+  blueprint: {fileID: 0}
+  attackTarget: {fileID: 0}
+  drunkMod: 1
+  slownessSeverity: 1
+  jumpForce: 10
 --- !u!124 &124019378386408966
 Behaviour:
   m_ObjectHideFlags: 1

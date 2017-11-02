@@ -45,8 +45,8 @@ public class CameraMovement : MonoBehaviour {
         // if (Input.GetKeyDown(KeyCode.U)) { StartCoroutine(shakeCamera(0.3f)); }
 
         // 1. get mouse input data
-        float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * 150f * normalMove; // horizontal mousespeed
-        float mouseY = Input.GetAxis("Mouse Y") * Time.deltaTime * 150f * normalMove; // vertical mousespeed
+        float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * mouseSensitivity * normalMove; // horizontal mousespeed
+        float mouseY = Input.GetAxis("Mouse Y") * Time.deltaTime * mouseSensitivity * normalMove; // vertical mousespeed
 
         upDownLook -= mouseY; // minus-equals un-inverts the mouse-look-y
         upDownLook = Mathf.Clamp(upDownLook, -80f, 80f); // constrain look 80 degrees up or down

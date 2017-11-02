@@ -105,7 +105,7 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
 
     void OnTriggerStay(Collider coll)
     {
-        if(coll.GetComponent<SpellBook>() == touchedSpell)
+        if(coll.GetComponent<SpellBook>() == touchedSpell && touchedSpell != null)
         {
             touchedSpell.hovered();
         }
