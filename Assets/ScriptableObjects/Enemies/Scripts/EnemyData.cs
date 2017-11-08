@@ -12,9 +12,11 @@ public class EnemyData : ScriptableObject {
     [Range(0, 100)] public float sightRange;
     [Range(0, 90)] public float sightAngle;
 
+    public int damage;
+
     public CombatType myType;
 
-    public NPCStateMachine startingState;
+    public NPCState startingState;
 
     public enum CombatType
     {

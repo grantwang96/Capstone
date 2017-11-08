@@ -1,15 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerDamageable : damageable {
 
     Coroutine flight;
     Coroutine seduced;
+    public Transform playerCanvas;
+    public Transform playerCanvasPrefab;
+
+    public Image healthBar;
 
 	// Use this for initialization
 	public override void Start () {
         base.Start();
+        playerCanvas = Instantiate(playerCanvasPrefab);
 	}
 	
 	// Update is called once per frame
@@ -17,11 +23,13 @@ public class PlayerDamageable : damageable {
 		// update healthbar
 	}
 
-    public override void TakeDamage(Transform attacker, int damage, Vector3 dir, float force)
+    public override void TakeDamage(Transform attacker, int hpLost, Vector3 dir, float force)
     {
         if (hurt) { return; }
         // Visual hurt effects
-        base.TakeDamage(attacker, damage, dir, force);
+        base.TakeDamage(attacker, hpLost, dir, force);
+        Debug.Log("Player HP: " + getHealth());
+        StartCoroutine(hurtFrames());
     }
 
     IEnumerator hurtFrames()

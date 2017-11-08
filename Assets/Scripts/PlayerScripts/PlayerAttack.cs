@@ -120,7 +120,6 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
     {
         if (coll.GetComponent<SpellBook>() == touchedSpell)
         {
-            Debug.Log("Goodbye");
             if(touchedSpell != null) {
                 touchedSpell.destroySpellDetails();
             }

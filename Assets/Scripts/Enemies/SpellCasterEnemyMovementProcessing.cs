@@ -2,29 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeleeEnemyIdle : NPCState
+public class SpellCasterEnemyIdle : NPCState
 {
-    /*
-    float idleTime;
-    float startIdle;
-    float sightRange;
-    Rigidbody rbody;
-    Movement myOwner;
-
-    Vector3 forward;
-    Vector3 currRotation;
-    Quaternion targetRotation;
-
-    float turnDurationTime;
-    float maxAngleChange = 60f;
-    float heading;
-    */
-    
     public override void Enter(Movement owner)
     {
         base.Enter(owner);
-        anim.SetInteger("Status", 0);
-        myOwner.StartCoroutine(headTurn()); // Possibly temporary solution.
+        myOwner.StartCoroutine(headTurn());
     }
 
     public override void Execute()
@@ -33,19 +16,19 @@ public class MeleeEnemyIdle : NPCState
         // Some idle animations
         // Check if player is in sight
 
-        if (myOwner.checkView()) {
+        if (myOwner.checkView())
+        {
             // change state to aggro
             Debug.Log("I can see you!");
-            myOwner.changeState(new MeleeEnemyChase());
+            myOwner.changeState(new SpellCasterEnemyAggro());
             return;
         }
 
         // Do some head turning
         base.Execute();
-
         if (Time.time - startIdle >= idleTime)
         {
-            myOwner.changeState(new MeleeEnemyWander());
+            myOwner.changeState(new SpellCasterEnemyWander());
         }
     }
 
@@ -61,7 +44,7 @@ public class MeleeEnemyIdle : NPCState
         float startTime = Time.time;
         float totalJourney = 0.25f;
         float fracJourney = 0;
-        while(fracJourney < 1f)
+        while (fracJourney < 1f)
         {
             fracJourney = (Time.time - startTime) / totalJourney;
             myOwner.Head.transform.localRotation = Quaternion.Slerp(startRotation, targetRotation, fracJourney);
@@ -89,7 +72,7 @@ public class MeleeEnemyIdle : NPCState
     }
 }
 
-public class MeleeEnemyWander : NPCState
+public class SpellCasterEnemyWander : NPCState
 {
     float wanderTime;
     float startWander;
@@ -107,8 +90,6 @@ public class MeleeEnemyWander : NPCState
         wanderTime = Random.Range(4f, 6f);
         rbody = owner.rbody;
         myOwner.currSpeed = myOwner.baseSpeed;
-        anim = myOwner.anim;
-        anim.SetInteger("Status", 1);
         headingGetter = myOwner.StartCoroutine(headingProcessing());
     }
 
@@ -118,11 +99,11 @@ public class MeleeEnemyWander : NPCState
         myOwner.transform.eulerAngles = Vector3.Slerp(myOwner.transform.eulerAngles, targRotation, Time.deltaTime * turnDurationTime);
         Vector3 forward = myOwner.transform.TransformDirection(Vector3.forward);
         if (!emergencyTurning) { rbody.MovePosition(myOwner.transform.position + forward * myOwner.currSpeed * Time.deltaTime); }
-        if(Time.time - startWander >= wanderTime) { myOwner.changeState(new MeleeEnemyIdle()); }
+        if (Time.time - startWander >= wanderTime) { myOwner.changeState(new SpellCasterEnemyIdle()); }
         if (myOwner.checkView())
         {
             // change state to aggro
-            myOwner.changeState(new MeleeEnemyChase());
+            myOwner.changeState(new SpellCasterEnemyAggro());
             Debug.Log("I can see you!");
             return;
         }
@@ -130,7 +111,7 @@ public class MeleeEnemyWander : NPCState
 
     public override void Exit()
     {
-        if(headingGetter != null) { myOwner.StopCoroutine(headingGetter); }
+        if (headingGetter != null) { myOwner.StopCoroutine(headingGetter); }
     }
 
     void cliffCheck()
@@ -185,17 +166,18 @@ public class MeleeEnemyWander : NPCState
         emergencyTurning = true;
         float heading = myOwner.transform.eulerAngles.y;
         int mod = 1;
-        if(Random.value < 0.5f) { mod = -1; }
+        if (Random.value < 0.5f) { mod = -1; }
         heading = Mathf.Clamp(heading + 180 * mod, 0, 360f);
         targRotation = new Vector3(0, heading, 0);
     }
 }
 
-public class MeleeEnemyChase : NPCState
+public class SpellCasterEnemyAggro : NPCState
 {
     Transform attackTarget;
     Vector3 lastKnownLocation;
-
+    float lostSightTime;
+    float lostSightLimit;
     public override void Enter(Movement owner)
     {
         myOwner = owner;
@@ -203,49 +185,31 @@ public class MeleeEnemyChase : NPCState
         myOwner.Head.forward = myOwner.transform.forward;
         attackTarget = myOwner.attackTarget;
         lastKnownLocation = attackTarget.position;
-        anim = myOwner.anim;
-        anim.SetInteger("Status", 2);
+        lostSightTime = 0f;
+        lostSightLimit = 3f;
     }
 
     public override void Execute()
     {
-        if (clearShot())
+        if (myOwner.checkView())
         {
-            chaseTarget();
+            lostSightTime = 0f;
+            // attack the player's location
+        }
+        else if(lostSightTime < lostSightLimit)
+        {
+            // attack the player's last known location
         }
         else
         {
+            // walk over to last known location
             goToLastLocation();
         }
     }
 
-    bool clearShot()
+    void processAttack()
     {
-        if(attackTarget == null) { return false; }
-        RaycastHit rayHit;
-        if (Physics.Raycast(myOwner.transform.position, attackTarget.position - myOwner.transform.position, out rayHit, myOwner.sightRange))
-        {
-            if(rayHit.transform == attackTarget) { return true; }
-        }
-        return false;
-    }
 
-    void chaseTarget()
-    {
-        Vector3 myOwnerPos = new Vector3(myOwner.transform.position.x, 0, myOwner.transform.position.z);
-        Vector3 targetPos = new Vector3(myOwner.attackTarget.position.x, 0, myOwner.attackTarget.position.z);
-        lastKnownLocation = attackTarget.position;
-        Vector3 dir = (targetPos - myOwnerPos).normalized;
-        Quaternion lookDir = Quaternion.LookRotation(dir);
-        // myOwner.transform.forward = dir;
-        myOwner.transform.rotation = Quaternion.Lerp(myOwner.transform.rotation, lookDir, Time.deltaTime * 4f);
-        myOwner.Head.forward = myOwner.transform.forward;
-        myOwner.rbody.MovePosition(myOwner.transform.position + myOwner.transform.forward * myOwner.currSpeed * Time.deltaTime);
-        if(Vector3.Distance(myOwner.transform.position, myOwner.attackTarget.position) < 1.5f) // replace 1f with range variable from myOwner
-        {
-            myOwner.StartCoroutine(myOwner.attack(attackTarget.position));
-        }
-        // check if close enough to attack
     }
 
     void goToLastLocation()
@@ -257,9 +221,9 @@ public class MeleeEnemyChase : NPCState
         myOwner.transform.rotation = Quaternion.Lerp(myOwner.transform.rotation, lookDir, Time.deltaTime * 4f);
         myOwner.Head.forward = myOwner.transform.forward;
         myOwner.rbody.MovePosition(myOwner.transform.position + myOwner.transform.forward * myOwner.currSpeed * Time.deltaTime);
-        if (Vector3.Distance(myOwner.transform.position, lastKnownLocation) < 0.4f)
+        if (Vector3.Distance(myOwner.transform.position, lastKnownLocation) < 0.4f) // If player is not seen, enter idling stage
         {
-            myOwner.changeState(new MeleeEnemyIdle());
+            myOwner.changeState(new SpellCasterEnemyIdle());
         }
     }
 

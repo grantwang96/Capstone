@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class NPCScript : Movement {
-    
-    void Start()
+
+    public Collider FistColl;
+
+    public override void Start()
     {
         setup();
     }
 
-    void Update()
+    public override void Update()
     {
         processMovement();
     }
@@ -17,6 +19,7 @@ public class NPCScript : Movement {
     public override void setup()
     {
         base.setup();
+        FistColl.GetComponent<FistScript>().damage = damage;
     }
 
     public override void processMovement()
@@ -24,8 +27,26 @@ public class NPCScript : Movement {
         base.processMovement();
     }
 
-    public override void changeState(NPCStateMachine newState)
+    public override void changeState(NPCState newState)
     {
         base.changeState(newState);
+    }
+
+    public override IEnumerator attack(Vector3 target)
+    {
+        attacking = true;
+        FistColl.enabled = true;
+        float startTime = Time.time;
+        // play attack animation
+        anim.Play("Attack");
+        while (anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+        {
+            yield return new WaitForEndOfFrame();
+        }
+        attacking = false;
+        FistColl.enabled = false;
+        // get attack animation length
+        // Do attack processing like hitbox, spell spawning, etc.
+        // yield return new WaitForSeconds(1f); // set clip length here
     }
 }

@@ -6,6 +6,7 @@ public abstract class damageable : MonoBehaviour
 {
     public int max_health;
     int health;
+    public int getHealth() { return health; }
     
     public bool transmutable;
 
@@ -29,14 +30,16 @@ public abstract class damageable : MonoBehaviour
         
     }
 
-    public virtual void TakeDamage(Transform attacker, int damage, Vector3 dir, float force)
+    public virtual void TakeDamage(Transform attacker, int hpLost, Vector3 dir, float force)
     {
-        health -= damage;
+        health -= hpLost;
+        Debug.Log("Ow");
         if(health <= 0) { dead = true; }
         if(dead)
         {
             StopAllCoroutines();
             Die();
+            return;
         }
         else
         {
@@ -124,14 +127,17 @@ public abstract class Movement : MonoBehaviour
     public Transform Head;
 
     public Rigidbody rbody;
+    public Animator anim;
     public EnemyData blueprint;
-    NPCStateMachine currState;
+    NPCState currState;
+    public int damage;
+    public bool attacking;
 
     public Transform attackTarget;
 
     public virtual void Start()
     {
-
+        setup();
     }
 
     public virtual void Update()
@@ -141,15 +147,16 @@ public abstract class Movement : MonoBehaviour
 
     public virtual void setup()
     {
-        blueprint.setup(this);
+        attacking = false;
         rbody = GetComponent<Rigidbody>();
+        blueprint.setup(this);
         currSpeed = baseSpeed;
         // setup currState
     }
 
     public virtual void processMovement()
     {
-        if(currState != null) { currState.Execute(); }
+        if(currState != null && !attacking) { currState.Execute(); }
     }
 
     public virtual bool checkView()
@@ -171,28 +178,68 @@ public abstract class Movement : MonoBehaviour
         return false;
     }
 
-    public virtual void changeState(NPCStateMachine newState)
+    public virtual void changeState(NPCState newState)
     {
-        if(currState != null) { currState.Exit(); }
+        // if(currState != null) { currState.Exit(); }
         currState = newState;
         currState.Enter(this);
+    }
+
+    public virtual IEnumerator attack(Vector3 target)
+    {
+        attacking = true;
+        float startTime = Time.time;
+        // play attack animation
+        anim.Play("Attack");
+        while (anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+        {
+            yield return new WaitForEndOfFrame();
+        }
+        attacking = false;
+        // get attack animation length
+        // Do attack processing like hitbox, spell spawning, etc.
+        // yield return new WaitForSeconds(1f); // set clip length here
     }
 }
 
 public abstract class NPCState
 {
-    public virtual void Enter()
-    {
+    public float idleTime;
+    public float startIdle;
+    public float sightRange;
+    public Rigidbody rbody;
+    public Movement myOwner;
 
+    public Vector3 forward;
+    public Vector3 currRotation;
+    public Quaternion targetRotation;
+
+    public float turnDurationTime;
+    public float maxAngleChange = 60f;
+    public float heading;
+
+    public Animator anim;
+
+    public virtual void Enter(Movement owner)
+    {
+        myOwner = owner;
+        rbody = owner.GetComponent<Rigidbody>();
+        idleTime = Random.Range(4f, 6f);
+        startIdle = Time.time;
+        targetRotation = Quaternion.Euler(0, 0, 0);
+        turnDurationTime = Random.Range(1f, 2f);
+        anim = myOwner.anim;
+        maxAngleChange = 60f;
     }
 
     public virtual void Execute()
     {
-
+        myOwner.Head.transform.localRotation = Quaternion.Slerp(myOwner.Head.localRotation, targetRotation, Time.deltaTime * turnDurationTime);
+        myOwner.transform.eulerAngles = new Vector3(0, myOwner.transform.eulerAngles.y, 0);
     }
 
     public virtual void Exit()
     {
-
+        // Perform last second actions...
     }
 }
