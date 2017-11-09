@@ -166,8 +166,15 @@ public abstract class Movement : MonoBehaviour
         float angle = Vector3.Angle(Head.forward, attackTarget.position - Head.position);
         if(dist <= sightRange && angle <= sightAngle)
         {
+            
             RaycastHit rayHit;
-            if (Physics.Raycast(transform.position, (attackTarget.position - transform.position).normalized, out rayHit, sightRange))
+            if (Physics.Raycast(Head.position, (attackTarget.position - Head.position).normalized, out rayHit, sightRange))
+            {
+                if (rayHit.collider.transform == attackTarget) {
+                    return true;
+                }
+            }
+            if (Physics.Raycast(Head.position, ((attackTarget.position + Vector3.up * 0.25f)), out rayHit, sightRange))
             {
                 if (rayHit.collider.transform == attackTarget)
                 {

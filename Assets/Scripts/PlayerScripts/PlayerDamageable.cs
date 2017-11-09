@@ -16,11 +16,13 @@ public class PlayerDamageable : damageable {
 	public override void Start () {
         base.Start();
         playerCanvas = Instantiate(playerCanvasPrefab);
+        healthBar = playerCanvas.Find("HealthBar").GetComponent<Image>();
 	}
 	
 	// Update is called once per frame
 	public override void Update () {
-		// update healthbar
+        // update healthbar
+        healthBar.fillAmount = (float)getHealth() / max_health;
 	}
 
     public override void TakeDamage(Transform attacker, int hpLost, Vector3 dir, float force)

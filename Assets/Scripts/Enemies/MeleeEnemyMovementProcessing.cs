@@ -25,6 +25,7 @@ public class MeleeEnemyIdle : NPCState
         base.Enter(owner);
         anim.SetInteger("Status", 0);
         myOwner.StartCoroutine(headTurn()); // Possibly temporary solution.
+        Debug.Log("Entering Idling...");
     }
 
     public override void Execute()
@@ -103,6 +104,7 @@ public class MeleeEnemyWander : NPCState
     public override void Enter(Movement owner)
     {
         myOwner = owner;
+        myOwner.currSpeed = myOwner.baseSpeed;
         startWander = Time.time;
         wanderTime = Random.Range(4f, 6f);
         rbody = owner.rbody;
@@ -110,6 +112,7 @@ public class MeleeEnemyWander : NPCState
         anim = myOwner.anim;
         anim.SetInteger("Status", 1);
         headingGetter = myOwner.StartCoroutine(headingProcessing());
+        Debug.Log("Entering Wander...");
     }
 
     public override void Execute()
@@ -205,6 +208,7 @@ public class MeleeEnemyChase : NPCState
         lastKnownLocation = attackTarget.position;
         anim = myOwner.anim;
         anim.SetInteger("Status", 2);
+        Debug.Log("Entering Chase...");
     }
 
     public override void Execute()
@@ -238,7 +242,7 @@ public class MeleeEnemyChase : NPCState
         Vector3 dir = (targetPos - myOwnerPos).normalized;
         Quaternion lookDir = Quaternion.LookRotation(dir);
         // myOwner.transform.forward = dir;
-        myOwner.transform.rotation = Quaternion.Lerp(myOwner.transform.rotation, lookDir, Time.deltaTime * 4f);
+        myOwner.transform.rotation = Quaternion.Lerp(myOwner.transform.rotation, lookDir, Time.deltaTime * 6f);
         myOwner.Head.forward = myOwner.transform.forward;
         myOwner.rbody.MovePosition(myOwner.transform.position + myOwner.transform.forward * myOwner.currSpeed * Time.deltaTime);
         if(Vector3.Distance(myOwner.transform.position, myOwner.attackTarget.position) < 1.5f) // replace 1f with range variable from myOwner
@@ -257,14 +261,42 @@ public class MeleeEnemyChase : NPCState
         myOwner.transform.rotation = Quaternion.Lerp(myOwner.transform.rotation, lookDir, Time.deltaTime * 4f);
         myOwner.Head.forward = myOwner.transform.forward;
         myOwner.rbody.MovePosition(myOwner.transform.position + myOwner.transform.forward * myOwner.currSpeed * Time.deltaTime);
-        if (Vector3.Distance(myOwner.transform.position, lastKnownLocation) < 0.4f)
+        if (Vector3.Distance(myOwner.transform.position, lastKnownLocation) < 1f)
         {
-            myOwner.changeState(new MeleeEnemyIdle());
+            myOwner.changeState(new MeleeEnemyScan());
         }
     }
 
     public override void Exit()
     {
         myOwner.currSpeed = myOwner.baseSpeed;
+    }
+}
+
+public class MeleeEnemyScan : NPCState
+{
+    public override void Enter(Movement owner)
+    {
+        base.Enter(owner);
+        anim.SetInteger("Status", 1);
+        anim.Play("Scan");
+        Debug.Log("Entering Scan...");
+    }
+
+    public override void Execute()
+    {
+        if (myOwner.checkView())
+        {
+            myOwner.changeState(new MeleeEnemyChase());
+        }
+        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Scan"))
+        {
+            myOwner.changeState(new MeleeEnemyWander());
+        }
+    }
+
+    public override void Exit()
+    {
+        
     }
 }
