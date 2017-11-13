@@ -191,14 +191,30 @@ public class SpellCasterEnemyAggro : NPCState
 
     public override void Execute()
     {
+        float startTime = Time.time;
+        lastKnownLocation = attackTarget.position;
         if (myOwner.checkView())
         {
             lostSightTime = 0f;
+            Vector3 facingDir = attackTarget.position - myOwner.transform.position;
+            facingDir.y = 0;
+            myOwner.transform.forward = facingDir;
+            myOwner.StartCoroutine(myOwner.attack(attackTarget.position));
             // attack the player's location
         }
         else if(lostSightTime < lostSightLimit)
         {
+            /*
+            Vector3 facingDir = attackTarget.position - myOwner.transform.position;
+            facingDir.y = 0;
+            myOwner.transform.forward = facingDir;
+            myOwner.StartCoroutine(myOwner.attack(attackTarget.position));
             // attack the player's last known location
+            // increment lost sight time
+            lostSightTime = Time.time - startTime;
+            Debug.Log(lostSightTime);
+            */
+            lostSightTime = 4f;
         }
         else
         {
@@ -223,7 +239,8 @@ public class SpellCasterEnemyAggro : NPCState
         myOwner.rbody.MovePosition(myOwner.transform.position + myOwner.transform.forward * myOwner.currSpeed * Time.deltaTime);
         if (Vector3.Distance(myOwner.transform.position, lastKnownLocation) < 0.4f) // If player is not seen, enter idling stage
         {
-            myOwner.changeState(new SpellCasterEnemyIdle());
+            Debug.Log("Guess I couldn't find you.");
+            myOwner.changeState(new NPCIdle());
         }
     }
 

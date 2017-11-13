@@ -266,7 +266,8 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
             List<Damageable> hitList = new List<Damageable>();
             if (attacker.GetComponent<Damageable>() != null) { hitList.Add(attacker.GetComponent<Damageable>()); }
             if (hitList.Count > 0) {
-                myAttackScript.GetComponent<SpellCaster>().getHitList(hitList, myAttackScript.GetComponent<SpellCaster>()); }
+                //  myAttackScript.GetComponent<SpellCaster>().getHitList(hitList, myAttackScript.GetComponent<SpellCaster>());
+            }
         }
         if (health <= 0)
         {
@@ -436,7 +437,7 @@ public class PlayerMovementRBody : MonoBehaviour, Damageable, Fighter {
             yield return new WaitForEndOfFrame();
         }
         myAttackScript.enabled = true;
-        caster.removeFromSeductionList(this.GetComponent<Damageable>());
+        // caster.removeFromSeductionList(this.GetComponent<Damageable>());
     }
 
     public void setCurrentTarget(List<Damageable> targets, SpellCaster owner)

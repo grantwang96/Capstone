@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu (menuName = "EnemyData/BasicMeleeEnemy")]
-public class BasicMeleeEnemy : EnemyData {
-    
+[CreateAssetMenu (menuName = "EnemyData/SpellCasterEnemy")]
+public class SpellCasterEnemy : EnemyData {
+
     public override void setup(Movement owner)
     {
         startingState = new NPCIdle();
@@ -14,6 +14,7 @@ public class BasicMeleeEnemy : EnemyData {
         ownerDam.max_health = health;
         owner.damage = damage;
         owner.attackTarget = GameObject.FindGameObjectWithTag("Player").transform;
+        // Add spellbook to enemy's inventory
         base.setup(owner);
     }
 }

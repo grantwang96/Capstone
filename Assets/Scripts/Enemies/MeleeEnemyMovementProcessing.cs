@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeleeEnemyIdle : NPCState
+public class NPCIdle : NPCState
 {
     /*
     float idleTime;
@@ -36,8 +36,8 @@ public class MeleeEnemyIdle : NPCState
 
         if (myOwner.checkView()) {
             // change state to aggro
+            becomeAggro(myOwner.myType);
             Debug.Log("I can see you!");
-            myOwner.changeState(new MeleeEnemyChase());
             return;
         }
 
@@ -46,7 +46,7 @@ public class MeleeEnemyIdle : NPCState
 
         if (Time.time - startIdle >= idleTime)
         {
-            myOwner.changeState(new MeleeEnemyWander());
+            myOwner.changeState(new NPCWander());
         }
     }
 
@@ -88,9 +88,28 @@ public class MeleeEnemyIdle : NPCState
         heading = Random.Range(floor, ceil);
         targetRotation = Quaternion.Euler(0, heading, 0);
     }
+
+    void becomeAggro(EnemyData.CombatType combatType)
+    {
+        switch (combatType)
+        {
+            case EnemyData.CombatType.Melee:
+                myOwner.changeState(new MeleeEnemyChase());
+                break;
+            case EnemyData.CombatType.SpellCaster:
+                myOwner.changeState(new SpellCasterEnemyAggro());
+                break;
+            case EnemyData.CombatType.Mixed:
+                break;
+            case EnemyData.CombatType.Ranged:
+                break;
+            case EnemyData.CombatType.Support:
+                break;
+        }
+    }
 }
 
-public class MeleeEnemyWander : NPCState
+public class NPCWander : NPCState
 {
     float wanderTime;
     float startWander;
@@ -121,11 +140,11 @@ public class MeleeEnemyWander : NPCState
         myOwner.transform.eulerAngles = Vector3.Slerp(myOwner.transform.eulerAngles, targRotation, Time.deltaTime * turnDurationTime);
         Vector3 forward = myOwner.transform.TransformDirection(Vector3.forward);
         if (!emergencyTurning) { rbody.MovePosition(myOwner.transform.position + forward * myOwner.currSpeed * Time.deltaTime); }
-        if(Time.time - startWander >= wanderTime) { myOwner.changeState(new MeleeEnemyIdle()); }
+        if(Time.time - startWander >= wanderTime) { myOwner.changeState(new NPCIdle()); }
         if (myOwner.checkView())
         {
             // change state to aggro
-            myOwner.changeState(new MeleeEnemyChase());
+            becomeAggro(myOwner.myType);
             Debug.Log("I can see you!");
             return;
         }
@@ -191,6 +210,25 @@ public class MeleeEnemyWander : NPCState
         if(Random.value < 0.5f) { mod = -1; }
         heading = Mathf.Clamp(heading + 180 * mod, 0, 360f);
         targRotation = new Vector3(0, heading, 0);
+    }
+
+    void becomeAggro(EnemyData.CombatType combatType)
+    {
+        switch (combatType)
+        {
+            case EnemyData.CombatType.Melee:
+                myOwner.changeState(new MeleeEnemyChase());
+                break;
+            case EnemyData.CombatType.SpellCaster:
+                myOwner.changeState(new SpellCasterEnemyAggro());
+                break;
+            case EnemyData.CombatType.Mixed:
+                break;
+            case EnemyData.CombatType.Ranged:
+                break;
+            case EnemyData.CombatType.Support:
+                break;
+        }
     }
 }
 
@@ -291,12 +329,30 @@ public class MeleeEnemyScan : NPCState
         }
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Scan"))
         {
-            myOwner.changeState(new MeleeEnemyWander());
+            myOwner.changeState(new NPCWander());
         }
     }
 
     public override void Exit()
     {
         
+    }
+}
+
+public class MeleeEnemySeduced : NPCState
+{
+    public override void Enter(Movement owner)
+    {
+        base.Enter(owner);
+    }
+
+    public override void Execute()
+    {
+        base.Execute();
+    }
+
+    public override void Exit()
+    {
+        base.Exit();
     }
 }

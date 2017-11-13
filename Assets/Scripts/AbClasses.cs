@@ -15,11 +15,16 @@ public abstract class damageable : MonoBehaviour
     public bool dead;
 
     public Rigidbody rbody;
-    
+    public MeshRenderer myRend;
+
+    Movement myMovement;
+    public damageable parentHit;
+
     public virtual void Start()
     {
-        Debug.Log("Oh my god!");
         rbody = GetComponent<Rigidbody>();
+        myRend = GetComponent<MeshRenderer>();
+        myMovement = GetComponent<Movement>();
         hurt = false;
         transmutable = true;
         health = max_health;
@@ -32,6 +37,10 @@ public abstract class damageable : MonoBehaviour
 
     public virtual void TakeDamage(Transform attacker, int hpLost, Vector3 dir, float force)
     {
+        if(parentHit != null) {
+            parentHit.TakeDamage(attacker, hpLost, dir, force);
+            return;
+        }
         health -= hpLost;
         Debug.Log("Ow");
         if(health <= 0) { dead = true; }
@@ -63,14 +72,55 @@ public abstract class damageable : MonoBehaviour
 
     }
 
+    public virtual void Blind(float duration, float severity)
+    {
+        Movement myOwnerMove = GetComponent<Movement>();
+        myOwnerMove.sightRange = 0f;
+        myOwnerMove.changeState(new NPCIdle());
+    }
+
+    public virtual void Drunk(float duration)
+    {
+        // myOwnerMove.changeState(new drunkState());
+    }
+
+    public virtual void Slow(float duration, float severity)
+    {
+        Movement myOwnerMove = GetComponent<Movement>();
+        myOwnerMove.currSpeed *= 0.5f;
+    }
+
     public virtual void InitiateTransmutation(float duration, GameObject replacement)
     {
-        
+        StartCoroutine(processTransmutation(duration, replacement));
     }
 
     public virtual IEnumerator processTransmutation(float duration, GameObject replacement)
     {
+        myMovement.preoccupied = true;
+        rbody.constraints = RigidbodyConstraints.FreezeAll;
+        myRend.enabled = false;
+        Collider myColl = GetComponent<Collider>();
+        myColl.enabled = false;
+        Renderer[] allRends = GetComponentsInChildren<Renderer>();
+        if (allRends.Length > 0) {
+            foreach(Renderer rend in allRends) { rend.enabled = false; }
+        }
+        // spawn effect
+        GameObject myReplace = Instantiate(replacement, transform.position, transform.rotation);
+        Rigidbody replaceRigidBody = myReplace.GetComponent<Rigidbody>();
+        replaceRigidBody.AddExplosionForce(3f, transform.position, 1f);
+        myReplace.GetComponent<damageable>().setTransmutable(false);
         yield return new WaitForSeconds(duration);
+        transform.position = myReplace.transform.position;
+        Destroy(myReplace); // Destroy my replacement
+        rbody.constraints = RigidbodyConstraints.None;
+        myRend.enabled = true;
+        myColl.enabled = true;
+        if (allRends.Length > 0) {
+            foreach (Renderer rend in allRends) { rend.enabled = true; }
+        }
+        myMovement.preoccupied = false;
     }
 
     public virtual void setTransmutable(bool newBool)
@@ -80,7 +130,8 @@ public abstract class damageable : MonoBehaviour
 
     public virtual void Seduce(float duration, GameObject target, SpellCaster owner)
     {
-        
+        owner.addToSeductionList(this);
+        myMovement.attackTarget = target.transform;
     }
 
     public virtual void vortexGrab(Transform center, float force, float duration)
@@ -97,25 +148,6 @@ public abstract class damageable : MonoBehaviour
     }
 }
 
-public abstract class fighter : MonoBehaviour
-{
-    public virtual void Blind(float duration, float severity)
-    {
-        Movement myOwnerMove = GetComponent<Movement>();
-        myOwnerMove.sightRange = 0f;
-        myOwnerMove.changeState(new MeleeEnemyIdle());
-    }
-    public virtual void Drunk(float duration)
-    {
-        // myOwnerMove.changeState(new drunkState());
-    }
-    public virtual void Slow(float duration, float severity)
-    {
-        Movement myOwnerMove = GetComponent<Movement>();
-        myOwnerMove.currSpeed *= 0.5f;
-    }
-}
-
 public abstract class Movement : MonoBehaviour
 {
     public float baseSpeed;
@@ -129,9 +161,14 @@ public abstract class Movement : MonoBehaviour
     public Rigidbody rbody;
     public Animator anim;
     public EnemyData blueprint;
+    public EnemyData.CombatType myType;
     NPCState currState;
     public int damage;
-    public bool attacking;
+    public bool preoccupied;
+
+    [SerializeField] int numRaycasts;
+    [SerializeField] float raySpread;
+    public LayerMask scanLayer;
 
     public Transform attackTarget;
 
@@ -147,7 +184,7 @@ public abstract class Movement : MonoBehaviour
 
     public virtual void setup()
     {
-        attacking = false;
+        preoccupied = false;
         rbody = GetComponent<Rigidbody>();
         blueprint.setup(this);
         currSpeed = baseSpeed;
@@ -156,7 +193,7 @@ public abstract class Movement : MonoBehaviour
 
     public virtual void processMovement()
     {
-        if(currState != null && !attacking) { currState.Execute(); }
+        if(currState != null && !preoccupied) { currState.Execute(); }
     }
 
     public virtual bool checkView()
@@ -164,21 +201,23 @@ public abstract class Movement : MonoBehaviour
         if(attackTarget == null) { return false; }
         float dist = Vector3.Distance(transform.position, attackTarget.position);
         float angle = Vector3.Angle(Head.forward, attackTarget.position - Head.position);
-        if(dist <= sightRange && angle <= sightAngle)
-        {
-            
+        if(dist <= sightRange && angle <= sightAngle) {
+            float angleInterval = 360 / numRaycasts;
             RaycastHit rayHit;
-            if (Physics.Raycast(Head.position, (attackTarget.position - Head.position).normalized, out rayHit, sightRange))
+            if (Physics.Raycast(Head.position, (attackTarget.position - Head.position).normalized, out rayHit, sightRange, scanLayer))
             {
-                if (rayHit.collider.transform == attackTarget) {
-                    return true;
-                }
+                if (rayHit.collider.transform == attackTarget) { return true; }
             }
-            if (Physics.Raycast(Head.position, ((attackTarget.position + Vector3.up * 0.25f)), out rayHit, sightRange))
+            for (int i = 0; i < numRaycasts; i++)
             {
-                if (rayHit.collider.transform == attackTarget)
-                {
-                    return true;
+                float ang = angleInterval * i;
+                Vector3 offset = new Vector3();
+                offset.x = transform.InverseTransformDirection(attackTarget.position).x + raySpread * Mathf.Sin(ang * Mathf.Deg2Rad);
+                offset.y = transform.InverseTransformDirection(attackTarget.position).y + raySpread * 2f * Mathf.Cos(ang * Mathf.Deg2Rad);
+                offset.z = transform.InverseTransformDirection(attackTarget.position).z;
+                offset = transform.TransformDirection(offset);
+                if (Physics.Raycast(Head.position, (offset - Head.position).normalized, out rayHit, sightRange, scanLayer)) {
+                    if (rayHit.collider.transform == attackTarget) { return true; }
                 }
             }
         }
@@ -194,7 +233,7 @@ public abstract class Movement : MonoBehaviour
 
     public virtual IEnumerator attack(Vector3 target)
     {
-        attacking = true;
+        preoccupied = true;
         float startTime = Time.time;
         // play attack animation
         anim.Play("Attack");
@@ -202,7 +241,7 @@ public abstract class Movement : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
         }
-        attacking = false;
+        preoccupied = false;
         // get attack animation length
         // Do attack processing like hitbox, spell spawning, etc.
         // yield return new WaitForSeconds(1f); // set clip length here

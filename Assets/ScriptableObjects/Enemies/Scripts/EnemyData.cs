@@ -35,5 +35,6 @@ public class EnemyData : ScriptableObject {
         owner.GetComponent<damageable>().max_health = health;
         owner.sightRange = sightRange;
         owner.sightAngle = sightAngle;
+        owner.myType = myType;
     }
 }

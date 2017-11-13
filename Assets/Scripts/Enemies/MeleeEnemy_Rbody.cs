@@ -102,7 +102,7 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
             dead = true;
             GameObject.Find("Scorekeeper").GetComponent<ScoreKeeper>().incrementScore();
             StopAllCoroutines();
-            if(myOwner != null) { myOwner.removeFromSeductionList(GetComponent<Damageable>()); }
+            // if(myOwner != null) { myOwner.removeFromSeductionList(GetComponent<Damageable>()); }
             Transform dokiFX = transform.Find("Doki");
             if (dokiFX != null)
             {
@@ -230,7 +230,7 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
         while(Time.time - startTime < duration)
         {
             if(gameObject == null) {
-                myOwner.removeFromSeductionList(this.GetComponent<Damageable>());
+                // myOwner.removeFromSeductionList(this.GetComponent<Damageable>());
                 yield break;
             }
             if(target.transform == attackTarget) { processSeducedMovement(target); }
@@ -239,7 +239,7 @@ public class MeleeEnemy_Rbody : MonoBehaviour, Damageable, Fighter {
         }
         freeMove = true;
         isSeduced = false;
-        myOwner.removeFromSeductionList(this.GetComponent<Damageable>());
+        // myOwner.removeFromSeductionList(this.GetComponent<Damageable>());
         myOwner = null;
         attackTarget = GameObject.Find("Player_Rbody").transform;
         Transform dokiFX = transform.Find("Doki");

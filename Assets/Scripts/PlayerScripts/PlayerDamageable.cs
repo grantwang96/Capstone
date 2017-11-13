@@ -77,7 +77,21 @@ public class PlayerDamageable : damageable {
 
     public override void InitiateTransmutation(float duration, GameObject replacement)
     {
-        base.InitiateTransmutation(duration, replacement);
+        StartCoroutine(processTransmutation(duration, replacement));
+    }
+
+    public override IEnumerator processTransmutation(float duration, GameObject replacement)
+    {
+        Collider myColl = GetComponent<Collider>();
+        myColl.enabled = false;
+        // Deactivate player attack?
+        GameObject newBody = Instantiate(replacement, transform);
+        newBody.GetComponent<Rigidbody>().isKinematic = true;
+        newBody.GetComponent<Rigidbody>().useGravity = false;
+        newBody.GetComponent<damageable>().parentHit = this;
+        yield return new WaitForSeconds(duration);
+        Destroy(newBody);
+        myColl.enabled = true;
     }
 
     public override void Seduce(float duration, GameObject target, SpellCaster owner)

@@ -90,7 +90,7 @@ public class Movable : MonoBehaviour, Damageable
             else { processSeducedAttack(); }
             yield return new WaitForEndOfFrame();
         }
-        myOwner.removeFromSeductionList(this.GetComponent<Damageable>());
+        // myOwner.removeFromSeductionList(this.GetComponent<Damageable>());
         GetComponent<MeshRenderer>().material.color = originColor;
         myOwner = null;
         attackTarget = null;

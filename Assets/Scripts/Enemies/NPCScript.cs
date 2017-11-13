@@ -34,16 +34,15 @@ public class NPCScript : Movement {
 
     public override IEnumerator attack(Vector3 target)
     {
-        attacking = true;
+        preoccupied = true;
         FistColl.enabled = true;
-        float startTime = Time.time;
         // play attack animation
         anim.Play("Attack");
         while (anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
         {
             yield return new WaitForEndOfFrame();
         }
-        attacking = false;
+        preoccupied = false;
         FistColl.enabled = false;
         // get attack animation length
         // Do attack processing like hitbox, spell spawning, etc.

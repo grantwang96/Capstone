@@ -25,7 +25,7 @@ public class Seduction : SpellEffect
         SpellCaster caster = projData.myCaster.GetComponent<SpellCaster>();
         foreach (Collider coll in colls)
         {
-            Damageable dam = coll.GetComponent<Damageable>();
+            damageable dam = coll.GetComponent<damageable>();
             if (dam != null && coll.transform != projData.myCaster && coll.transform != projData.myCasterBody)
             {
                 dam.Seduce(projData.power, projData.myCasterBody.gameObject, caster);

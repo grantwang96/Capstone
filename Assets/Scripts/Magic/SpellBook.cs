@@ -116,14 +116,12 @@ public class SpellBook : MonoBehaviour, Interactable {
     {
         spellEffect.primaryCast(myUser, myUserBody, power);
         sideEffect.sideEffect(myUserFighter, myUserDamageable, sideEffectDuration, sideEffectSeverity);
-        ammo -= 1;
     }
 
     public void secondaryCast()
     {
         spellEffect.secondaryCast(myUser, myUserBody, power);
         sideEffect.sideEffect(myUserFighter, myUserDamageable, sideEffectDuration, sideEffectSeverity);
-        ammo -= 1;
     }
 
     public void sideEffectCast()

@@ -54,11 +54,11 @@ public class Fireblast : SpellEffect {
         {
             Transform newExp = Instantiate(deathFX, projFired.position, Quaternion.identity);
             Collider[] colls = Physics.OverlapSphere(projFired.transform.position, radius);
-            List<Damageable> potentialTargets = new List<Damageable>();
+            List<damageable> potentialTargets = new List<damageable>();
             SpellCaster caster = projFired.GetComponent<ProjectileBehavior>().mySpellCaster;
             for (int i = 0; i < colls.Length; i++)
             {
-                Damageable dam = colls[i].GetComponent<Damageable>();
+                damageable dam = colls[i].GetComponent<damageable>();
                 if (dam != null)
                 {
                     dam.TakeDamage(proj.myCasterBody, projFired.GetComponent<ProjectileBehavior>().power, colls[i].transform.position - projFired.transform.position, knockbackForce);
@@ -153,7 +153,7 @@ public class Fireblast : SpellEffect {
         newproj.mainShot = false;
     }
     
-    void hitList(List<Damageable> targets, SpellCaster caster)
+    void hitList(List<damageable> targets, SpellCaster caster)
     {
         caster.getHitList(targets, caster);
     }

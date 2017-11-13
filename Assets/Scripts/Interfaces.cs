@@ -28,10 +28,10 @@ public interface SpellCaster
 {
     void AddSpell(SpellBook newSpell);
     void DropSpell(SpellBook dropSpell);
-    void addToSeductionList(Damageable loser);
-    void removeFromSeductionList(Damageable loser);
+    void addToSeductionList(damageable loser);
+    void removeFromSeductionList(damageable loser);
     void initiateSeduction(float duration);
-    void getHitList(List<Damageable> hitList, SpellCaster owner);
+    void getHitList(List<damageable> hitList, SpellCaster owner);
 }
 
 public interface Interactable

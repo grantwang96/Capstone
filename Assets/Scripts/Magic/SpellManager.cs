@@ -10,6 +10,8 @@ public class SpellManager : MonoBehaviour {
     public List<Transform> spellSpawns = new List<Transform>();
     public static SpellManager Instance;
 
+    public Transform worldCanvas;
+
     bool gameIsRunning = true;
 
     public Transform spellBookPrefab;

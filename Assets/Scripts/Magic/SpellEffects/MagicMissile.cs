@@ -78,11 +78,11 @@ public class MagicMissile : SpellEffect
         SpellCaster caster = projFired.GetComponent<ProjectileBehavior>().mySpellCaster;
         if(colls.Length > 0)
         {
-            List<Damageable> potentialTargets = new List<Damageable>();
+            List<damageable> potentialTargets = new List<damageable>();
             for (int i = 0; i < colls.Length; i++)
             {
                 if(colls[i].transform == proj.myCasterBody) { continue; }
-                Damageable dam = colls[i].GetComponent<Damageable>();
+                damageable dam = colls[i].GetComponent<damageable>();
                 if (dam != null)
                 {
                     dam.TakeDamage(proj.myCasterBody, proj.power, (colls[i].transform.position - proj.myCasterBody.position).normalized, knockbackForce);
@@ -104,7 +104,7 @@ public class MagicMissile : SpellEffect
         Destroy(projFired.gameObject);
     }
 
-    void hitList(List<Damageable> targets, SpellCaster caster)
+    void hitList(List<damageable> targets, SpellCaster caster)
     {
         caster.getHitList(targets, caster);
     }

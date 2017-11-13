@@ -15,10 +15,10 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
     public Transform hoverSpellDetails;
     public SpellBook touchedSpell;
 
-    public List<Damageable> seducedObjects = new List<Damageable>();
+    public List<damageable> seducedObjects = new List<damageable>();
     public Coroutine seductionEffect;
 
-    public delegate void HitTarget(List<Damageable> targets, SpellCaster owner);
+    public delegate void HitTarget(List<damageable> targets, SpellCaster owner);
     public event HitTarget OnHitTarget;
 
     // Use this for initialization
@@ -33,6 +33,7 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
         if (Input.GetMouseButtonDown(0) && spellInventory.Count > 0)
         {
             spellInventory[currSpell].primaryCast();
+            spellInventory[currSpell].useAmmo();
             updateCurrSpellInfo();
         }
 	}
@@ -174,24 +175,26 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
             + spellInventory[currSpell].maxAmmo;
     }
 
-    public void addSeductionObject(Damageable loser)
+    public void addSeductionObject(damageable loser)
     {
         seducedObjects.Add(loser);
     }
 
-    public void removeFromSeductionList(Damageable loser)
+    public void removeFromSeductionList(damageable loser)
     {
         seducedObjects.Remove(loser);
-        OnHitTarget -= loser.setCurrentTarget;
+        // OnHitTarget -= loser.setCurrentTarget;
     }
 
-    public void addToSeductionList(Damageable loser)
+    public void addToSeductionList(damageable loser)
     {
+        /*
         if (!seducedObjects.Contains(loser))
         {
             seducedObjects.Add(loser);
             OnHitTarget += loser.setCurrentTarget;
         }
+        */
     }
 
     public void initiateSeduction(float duration)
@@ -202,7 +205,7 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
         */
     }
 
-    public void getHitList(List<Damageable> hitList, SpellCaster owner)
+    public void getHitList(List<damageable> hitList, SpellCaster owner)
     {
         if(OnHitTarget != null)
         {
