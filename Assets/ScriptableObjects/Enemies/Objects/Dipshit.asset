@@ -16,5 +16,5 @@ MonoBehaviour:
   maxSpeed: 6
   sightRange: 15
   sightAngle: 80
-  damage: 0
+  damage: 5
   myType: 0

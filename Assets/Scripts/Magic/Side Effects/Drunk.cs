@@ -16,8 +16,8 @@ public class Drunk : SideEffect {
         base.setupSpell(spellBook);
     }
 
-    public override void sideEffect(Fighter userFight, Damageable userDam, float duration, float severity)
+    public override void sideEffect(damageable userDam, float duration, float severity)
     {
-        userFight.Drunk(duration);
+        userDam.Drunk(duration);
     }
 }

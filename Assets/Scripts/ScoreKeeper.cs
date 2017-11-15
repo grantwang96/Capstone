@@ -8,9 +8,11 @@ public class ScoreKeeper : MonoBehaviour {
 
     public int score;
     public Text scoreBoard;
+    public static ScoreKeeper Instance;
 
     void Start()
     {
+        Instance = this;
         SceneManager.sceneLoaded += OnSceneLoad;
         DontDestroyOnLoad(gameObject);
         scoreBoard = GameObject.Find("Score").GetComponent<Text>();
@@ -39,5 +41,15 @@ public class ScoreKeeper : MonoBehaviour {
     {
         if(scoreBoard == null) { return; }
         scoreBoard.text = "Score: " + score;
+    }
+
+    public void Lose()
+    {
+        SceneManager.LoadScene("Lose");
+    }
+
+    public void Restart()
+    {
+
     }
 }

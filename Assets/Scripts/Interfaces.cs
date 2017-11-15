@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public interface Damageable
 {
     void TakeDamage(Transform attacker, int damage, Vector3 dir, float force);
@@ -23,7 +24,7 @@ public interface Fighter
 
     float getSightRange();
 }
-
+*/
 public interface SpellCaster
 {
     void AddSpell(SpellBook newSpell);
@@ -36,7 +37,7 @@ public interface SpellCaster
 
 public interface Interactable
 {
-    void PickUp(Transform user, Transform userbody, Fighter newFighter, Damageable newDamageable);
+    void PickUp(Transform user, Transform userbody, damageable newDamageable);
     void Drop();
 }
 

@@ -39,7 +39,7 @@ public class PillarOfDoom : MonoBehaviour {
             RaycastHit[] rayHits = Physics.SphereCastAll(transform.position, radius, Vector3.up, dist);
             foreach(RaycastHit hit in rayHits)
             {
-                Damageable dam = hit.collider.GetComponent<Damageable>();
+                damageable dam = hit.collider.GetComponent<damageable>();
                 if(dam != null)
                 {
                     Vector3 dir = (hit.collider.transform.position - transform.position).normalized;

@@ -19,8 +19,8 @@ public class Flying : SideEffect
         base.setupSpell(spellBook);
     }
 
-    public override void sideEffect(Fighter userFight, Damageable userDam, float duration, float severity)
+    public override void sideEffect(damageable userDam, float duration, float severity)
     {
-        userDam.fly(severity, duration);
+        userDam.Fly(severity, duration);
     }
 }

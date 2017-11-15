@@ -11,8 +11,8 @@ public class SpellBook : MonoBehaviour, Interactable {
     public Transform myUser;
     public Transform myUserBody;
 
-    public Fighter myUserFighter;
-    public Damageable myUserDamageable;
+    // public Fighter myUserFighter;
+    public damageable myUserDamageable;
 
     public string spellEffectDescription;
     public string sideEffectDescription;
@@ -59,7 +59,7 @@ public class SpellBook : MonoBehaviour, Interactable {
         if (defaultSpell) {
             Transform user = GameObject.Find("PlayerHead").transform;
             Transform userbody = GameObject.Find("Player_Rbody").transform;
-            PickUp(user, userbody, userbody.GetComponent<Fighter>(), userbody.GetComponent<Damageable>());
+            PickUp(user, userbody, userbody.GetComponent<damageable>());
         }
         dead = false;
         dying = false;
@@ -115,20 +115,20 @@ public class SpellBook : MonoBehaviour, Interactable {
     public void primaryCast()
     {
         spellEffect.primaryCast(myUser, myUserBody, power);
-        sideEffect.sideEffect(myUserFighter, myUserDamageable, sideEffectDuration, sideEffectSeverity);
+        sideEffect.sideEffect(myUserDamageable, sideEffectDuration, sideEffectSeverity);
     }
 
     public void secondaryCast()
     {
         spellEffect.secondaryCast(myUser, myUserBody, power);
-        sideEffect.sideEffect(myUserFighter, myUserDamageable, sideEffectDuration, sideEffectSeverity);
+        sideEffect.sideEffect(myUserDamageable, sideEffectDuration, sideEffectSeverity);
     }
 
     public void sideEffectCast()
     {
         if (sideEffect != null)
         {
-            sideEffect.sideEffect(myUserFighter, myUserDamageable, sideEffectDuration, sideEffectSeverity);
+            sideEffect.sideEffect(myUserDamageable, sideEffectDuration, sideEffectSeverity);
         }
     }
 
@@ -137,7 +137,7 @@ public class SpellBook : MonoBehaviour, Interactable {
         power = newPower;
     }
 
-    public void PickUp(Transform user, Transform userbody, Fighter newFighter, Damageable newDamageable)
+    public void PickUp(Transform user, Transform userbody, damageable newDamageable)
     {
         if (dead) { return; }
         transform.parent = user;
@@ -145,7 +145,6 @@ public class SpellBook : MonoBehaviour, Interactable {
         myUser = user;
         myUserBody = userbody;
         GetComponent<ParticleSystem>().Stop();
-        myUserFighter = newFighter;
         myUserDamageable = newDamageable;
         GetComponent<Collider>().enabled = false;
         dead = true;
@@ -172,7 +171,6 @@ public class SpellBook : MonoBehaviour, Interactable {
         GetComponent<ParticleSystem>().Play();
         GetComponent<Collider>().enabled = true;
         myUser = null;
-        myUserFighter = null;
         myUserDamageable = null;
         transform.Find("Book").gameObject.SetActive(true);
         dead = false;

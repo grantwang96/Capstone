@@ -341,18 +341,59 @@ public class MeleeEnemyScan : NPCState
 
 public class MeleeEnemySeduced : NPCState
 {
-    public override void Enter(Movement owner)
+    Transform master;
+
+    public override void Enter(Movement owner) // assumes new attackTarget has been established.
     {
-        base.Enter(owner);
+        myOwner = owner;
+        rbody = owner.rbody;
+        myOwner.currSpeed = myOwner.maxSpeed;
+        master = myOwner.attackTarget;
     }
 
     public override void Execute()
     {
-        base.Execute();
+        if(myOwner.attackTarget == master) {
+            fawn();
+        }
+        else if(myOwner.attackTarget == null) {
+            myOwner.changeState(new NPCIdle());
+        }
+        else {
+            attackTarget();
+        }
+    }
+
+    void fawn()
+    {
+        float dist = Vector3.Distance(myOwner.transform.position, myOwner.attackTarget.position);
+        Vector3 dirModded = myOwner.attackTarget.position - myOwner.transform.position;
+        dirModded.y = 0;
+        myOwner.transform.rotation = Quaternion.Lerp(myOwner.transform.rotation, Quaternion.LookRotation(dirModded), 4f * Time.deltaTime);
+        if (dist > 5f)
+        {
+            Vector3 dir = dirModded.normalized;
+            rbody.MovePosition(dir * myOwner.currSpeed * Time.deltaTime);
+        }
+    }
+
+    void attackTarget()
+    {
+        float dist = Vector3.Distance(myOwner.transform.position, myOwner.attackTarget.position);
+        Vector3 dirModded = myOwner.attackTarget.position - myOwner.transform.position;
+        dirModded.y = 0;
+        myOwner.transform.rotation = Quaternion.Lerp(myOwner.transform.rotation, Quaternion.LookRotation(dirModded), 4f * Time.deltaTime);
+        if(dist <= 1f) {
+            myOwner.StartCoroutine(myOwner.attack(myOwner.attackTarget.position));
+        }
+        else {
+            Vector3 dir = dirModded.normalized;
+            rbody.MovePosition(dir * myOwner.currSpeed * Time.deltaTime);
+        }
     }
 
     public override void Exit()
     {
-        base.Exit();
+        
     }
 }

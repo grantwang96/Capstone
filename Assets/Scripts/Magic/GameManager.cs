@@ -8,8 +8,10 @@ public class GameManager : MonoBehaviour {
     public Transform[] enemySpawns;
     public Transform meleeEnemyPrefab;
 
-    float spawnTime = 7f;
-    float minSpawnTime = 1f;
+    Transform player;
+
+    public float spawnTime = 7f;
+    public float minSpawnTime = 1f;
     float startTime;
 
     public bool isSpawning;
@@ -18,6 +20,7 @@ public class GameManager : MonoBehaviour {
 	void Start () {
         Instance = this;
         startTime = Time.time;
+        player = GameObject.FindGameObjectWithTag("Player").transform;
 	}
 	
 	// Update is called once per frame
@@ -25,7 +28,10 @@ public class GameManager : MonoBehaviour {
 		if(Time.time - startTime > spawnTime && isSpawning)
         {
             startTime = Time.time;
-            Transform newEnemy = Instantiate(meleeEnemyPrefab, enemySpawns[Random.Range(0, enemySpawns.Length)].position, Quaternion.identity);
+            Vector3 loc = enemySpawns[Random.Range(0, enemySpawns.Length)].position;
+            Vector3 dir = -loc;
+            dir.y = 0;
+            Transform newEnemy = Instantiate(meleeEnemyPrefab, loc, Quaternion.LookRotation(dir));
             spawnTime -= Time.deltaTime * 10;
             if(spawnTime < minSpawnTime) { spawnTime = minSpawnTime; }
         }

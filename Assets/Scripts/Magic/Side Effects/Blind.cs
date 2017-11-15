@@ -12,9 +12,9 @@ public class Blind : SideEffect {
     public float severityLowerBound;
     public float severityUpperBound;
 
-    public override void sideEffect(Fighter userFight, Damageable userDam, float duration, float severity)
+    public override void sideEffect(damageable userDam, float duration, float severity)
     {
-        userFight.Blind(duration, severity);
+        userDam.Blind(severity, duration);
     }
     public override void setupSpell(SpellBook spellBook)
     {

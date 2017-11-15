@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movable : MonoBehaviour, Damageable
+public class Movable : damageable
 {
     bool transmuted = false;
-    bool transmutable = true;
 
     Coroutine seduction;
     Transform attackTarget;
@@ -17,12 +16,12 @@ public class Movable : MonoBehaviour, Damageable
         return gameObject;
     }
 
-    public void TakeDamage(Transform attacker, int damage, Vector3 dir, float force)
+    public override void TakeDamage(Transform attacker, int damage, Vector3 dir, float force)
     {
         GetComponent<Rigidbody>().AddForce(dir * force, ForceMode.Impulse);
     }
 
-    public void InitiateTransmutation(float duration, GameObject replacement)
+    public override void InitiateTransmutation(float duration, GameObject replacement)
     {
         if (!transmuted && transmutable)
         {
@@ -43,7 +42,7 @@ public class Movable : MonoBehaviour, Damageable
             myReplacement.GetComponent<Rigidbody>().AddForce(Vector3.up * 10f, ForceMode.Impulse);
             myReplacement.GetComponent<Rigidbody>().angularVelocity = UnityEngine.Random.insideUnitSphere * 5f;
         }
-        myReplacement.GetComponent<Damageable>().setTransmutable(false);
+        myReplacement.GetComponent<damageable>().setTransmutable(false);
         yield return new WaitForSeconds(duration);
         Destroy(myReplacement);
         transform.position = myReplacement.transform.position;
@@ -56,12 +55,12 @@ public class Movable : MonoBehaviour, Damageable
         GetComponent<Rigidbody>().angularVelocity = UnityEngine.Random.insideUnitSphere * 5f;
     }
 
-    public void setTransmutable(bool newBool)
+    public override void setTransmutable(bool newBool)
     {
         transmutable = newBool;
     }
 
-    public void vortexGrab(Transform center, float force, float duration)
+    public override void vortexGrab(Transform center, float force, float duration)
     {
         Vector3 dir = (center.position - transform.position).normalized;
         GetComponent<Rigidbody>().AddForce(dir * force);
@@ -72,7 +71,7 @@ public class Movable : MonoBehaviour, Damageable
 
     }
 
-    public void Seduce(float duration, GameObject target, SpellCaster owner)
+    public override void Seduce(float duration, GameObject target, SpellCaster owner)
     {
         myOwner = owner;
         if(seduction == null) { seduction = StartCoroutine(processSeduction(duration, target, owner)); }
@@ -125,18 +124,18 @@ public class Movable : MonoBehaviour, Damageable
         GetComponent<Rigidbody>().velocity = moveDir * 20f;
     }
 
-    public void setCurrentTarget(List<Damageable> targets, SpellCaster owner)
+    public void setCurrentTarget(List<damageable> targets, SpellCaster owner)
     {
         myOwner = owner;
-        List<Damageable> goodTargets = new List<Damageable>();
+        List<damageable> goodTargets = new List<damageable>();
         for (int i = 0; i < targets.Count; i++)
         {
-            if (targets[i] != GetComponent<Damageable>()) { goodTargets.Add(targets[i]); }
+            if (targets[i] != GetComponent<damageable>()) { goodTargets.Add(targets[i]); }
         }
         if (goodTargets.Count > 0)
         {
-            Damageable target = goodTargets[UnityEngine.Random.Range(0, goodTargets.Count)];
-            attackTarget = target.getGameObject().transform;
+            damageable target = goodTargets[UnityEngine.Random.Range(0, goodTargets.Count)];
+            attackTarget = target.transform;
         }
     }
 }

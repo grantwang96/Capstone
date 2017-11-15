@@ -21,7 +21,7 @@ public class EnemySpellCasterMovement : Movement, SpellCaster
 
     public override IEnumerator attack(Vector3 target)
     {
-        preoccupied = true;
+        hamper++;
         anim.Play("Attack");
         bool fired = false;
         while (anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
@@ -33,7 +33,7 @@ public class EnemySpellCasterMovement : Movement, SpellCaster
             }
             yield return new WaitForEndOfFrame();
         }
-        preoccupied = false;
+        hamper--;
     }
 
     #endregion

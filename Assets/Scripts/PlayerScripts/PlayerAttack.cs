@@ -113,7 +113,7 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
         if (Input.GetMouseButtonDown(1) && coll.GetComponent<Interactable>() != null)
         {
             Interactable interact = coll.GetComponent<Interactable>();
-            interact.PickUp(transform, myBody, myBody.GetComponent<Fighter>(), myBody.GetComponent<Damageable>());
+            interact.PickUp(transform, myBody, myBody.GetComponent<damageable>());
         }
     }
 
@@ -183,18 +183,16 @@ public class PlayerAttack : MonoBehaviour, SpellCaster {
     public void removeFromSeductionList(damageable loser)
     {
         seducedObjects.Remove(loser);
-        // OnHitTarget -= loser.setCurrentTarget;
+        OnHitTarget -= loser.setCurrentTarget;
     }
 
     public void addToSeductionList(damageable loser)
     {
-        /*
         if (!seducedObjects.Contains(loser))
         {
             seducedObjects.Add(loser);
             OnHitTarget += loser.setCurrentTarget;
         }
-        */
     }
 
     public void initiateSeduction(float duration)

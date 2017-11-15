@@ -249,3 +249,8 @@ public class SpellCasterEnemyAggro : NPCState
         myOwner.currSpeed = myOwner.baseSpeed;
     }
 }
+
+public class SpellCasterEnemySeduced : NPCState
+{
+
+}

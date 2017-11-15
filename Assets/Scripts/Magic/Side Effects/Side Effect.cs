@@ -9,7 +9,7 @@ public abstract class SideEffect : ScriptableObject {
     public string sideEffectDescription;
     public Sprite affectIcon;
 
-    public abstract void sideEffect(Fighter userFight, Damageable userDam, float duration, float severity);
+    public abstract void sideEffect(damageable userDam, float duration, float severity);
     public virtual void setupSpell(SpellBook spellBook)
     {
         spellBook.maxAmmo += ammoBonus;

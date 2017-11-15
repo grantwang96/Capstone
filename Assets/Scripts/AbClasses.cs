@@ -7,7 +7,7 @@ public abstract class damageable : MonoBehaviour
     public int max_health;
     int health;
     public int getHealth() { return health; }
-    
+
     public bool transmutable;
 
     public bool hurt;
@@ -17,7 +17,7 @@ public abstract class damageable : MonoBehaviour
     public Rigidbody rbody;
     public MeshRenderer myRend;
 
-    Movement myMovement;
+    public Movement myMovement;
     public damageable parentHit;
 
     public virtual void Start()
@@ -97,9 +97,9 @@ public abstract class damageable : MonoBehaviour
 
     public virtual IEnumerator processTransmutation(float duration, GameObject replacement)
     {
-        myMovement.preoccupied = true;
+        myMovement.hamper++;
         rbody.constraints = RigidbodyConstraints.FreezeAll;
-        myRend.enabled = false;
+        // myRend.enabled = false;
         Collider myColl = GetComponent<Collider>();
         myColl.enabled = false;
         Renderer[] allRends = GetComponentsInChildren<Renderer>();
@@ -115,12 +115,12 @@ public abstract class damageable : MonoBehaviour
         transform.position = myReplace.transform.position;
         Destroy(myReplace); // Destroy my replacement
         rbody.constraints = RigidbodyConstraints.None;
-        myRend.enabled = true;
+        // myRend.enabled = true;
         myColl.enabled = true;
         if (allRends.Length > 0) {
             foreach (Renderer rend in allRends) { rend.enabled = true; }
         }
-        myMovement.preoccupied = false;
+        myMovement.hamper--;
     }
 
     public virtual void setTransmutable(bool newBool)
@@ -132,6 +132,13 @@ public abstract class damageable : MonoBehaviour
     {
         owner.addToSeductionList(this);
         myMovement.attackTarget = target.transform;
+    }
+
+    public virtual void setCurrentTarget(List<damageable> targets, SpellCaster owner)
+    {
+        if(targets.Count != 0) {
+            myMovement.attackTarget = targets[Random.Range(0, targets.Count)].transform;
+        }
     }
 
     public virtual void vortexGrab(Transform center, float force, float duration)
@@ -162,9 +169,13 @@ public abstract class Movement : MonoBehaviour
     public Animator anim;
     public EnemyData blueprint;
     public EnemyData.CombatType myType;
+
     NPCState currState;
+    public NPCState getCurrentState() { return currState; }
+
     public int damage;
-    public bool preoccupied;
+
+    public int hamper;
 
     [SerializeField] int numRaycasts;
     [SerializeField] float raySpread;
@@ -184,7 +195,7 @@ public abstract class Movement : MonoBehaviour
 
     public virtual void setup()
     {
-        preoccupied = false;
+        hamper = 0;
         rbody = GetComponent<Rigidbody>();
         blueprint.setup(this);
         currSpeed = baseSpeed;
@@ -193,7 +204,7 @@ public abstract class Movement : MonoBehaviour
 
     public virtual void processMovement()
     {
-        if(currState != null && !preoccupied) { currState.Execute(); }
+        if(currState != null && hamper <= 0) { currState.Execute(); }
     }
 
     public virtual bool checkView()
@@ -233,7 +244,7 @@ public abstract class Movement : MonoBehaviour
 
     public virtual IEnumerator attack(Vector3 target)
     {
-        preoccupied = true;
+        hamper++;
         float startTime = Time.time;
         // play attack animation
         anim.Play("Attack");
@@ -241,7 +252,7 @@ public abstract class Movement : MonoBehaviour
         {
             yield return new WaitForEndOfFrame();
         }
-        preoccupied = false;
+        hamper--;
         // get attack animation length
         // Do attack processing like hitbox, spell spawning, etc.
         // yield return new WaitForSeconds(1f); // set clip length here

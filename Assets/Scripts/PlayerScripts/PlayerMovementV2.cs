@@ -39,6 +39,7 @@ public class PlayerMovementV2 : Movement {
 
     public override void processMovement()
     {
+        if (hamper > 0) { return; }
         float horizontal = Input.GetAxis("Horizontal"); // Get player inputs
         float vertical = Input.GetAxis("Vertical"); // Get player inputs
 

@@ -6,9 +6,20 @@ using UnityEngine.UI;
 public class PlayerDamageable : damageable {
 
     Coroutine flight;
+    Coroutine drunkness;
+    Coroutine slowness;
     Coroutine seduced;
+
     public Transform playerCanvas;
     public Transform playerCanvasPrefab;
+    public CameraMovement HeadMove;
+    public GameObject DrunkHead;
+
+    public Sprite drunkIcon;
+    public Sprite slowIcon;
+    public Sprite floatIcon;
+    public Image statusEffectPrefab;
+    public Transform statusEffectBar;
 
     public Image healthBar;
 
@@ -43,19 +54,36 @@ public class PlayerDamageable : damageable {
 
     public override void Die()
     {
-        // reset game;
+        
     }
 
     public override void Fly(float force, float duration)
     {
-        if(flight != null) { StopCoroutine(flight); }
+        if(flight != null) {
+            StopCoroutine(flight);
+            myMovement.hamper--;
+        }
         flight = StartCoroutine(processFlying(force, duration));
     }
 
     IEnumerator processFlying(float force, float duration)
     {
+        Debug.Log("Duration is: " + duration);
         float startTime = Time.time;
         Movement myOwnerMove = GetComponent<Movement>();
+        myOwnerMove.hamper++;
+        HeadMove.separateControl = false;
+        Transform statEffectObj = statusEffectBar.transform.Find("Flight");
+        Image newStatusEffect;
+        if (statEffectObj == null) {
+            newStatusEffect = Instantiate(statusEffectPrefab);
+            newStatusEffect.transform.name = "Flight";
+            newStatusEffect.sprite = floatIcon;
+            newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
+        }
+        else {
+            newStatusEffect = statEffectObj.GetComponent<Image>();
+        }
         // UI handling
         rbody.constraints = RigidbodyConstraints.None;
         if (rbody.useGravity)
@@ -70,9 +98,99 @@ public class PlayerDamageable : damageable {
             float horizontal = Input.GetAxis("Horizontal"); // Get player inputs
             rbody.AddForce(myOwnerMove.Head.transform.forward * vertical * myOwnerMove.currSpeed / 2 + (myOwnerMove.Head.transform.right * horizontal * myOwnerMove.currSpeed / 2));
             if (rbody.velocity.magnitude > myOwnerMove.currSpeed / 2) { rbody.velocity = rbody.velocity.normalized * myOwnerMove.currSpeed / 2; }
+            newStatusEffect.fillAmount = 1f - (Time.time - startTime) / duration;
             yield return new WaitForEndOfFrame();
         }
+        rbody.useGravity = true;
+        rbody.angularDrag = 0.05f;
+        transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
+        rbody.angularVelocity = Vector3.zero;
+        rbody.constraints = RigidbodyConstraints.FreezeRotation;
+        HeadMove.separateControl = true;
+        HeadMove.transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
+        transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
+        Destroy(newStatusEffect.gameObject);
         flight = null;
+        myOwnerMove.hamper--;
+    }
+
+    public override void Drunk(float duration)
+    {
+        if(drunkness != null) { StopCoroutine(drunkness); }
+        drunkness = StartCoroutine(processDrunk(duration));
+    }
+
+    IEnumerator processDrunk(float duration)
+    {
+        PlayerMovementV2 myMove = GetComponent<PlayerMovementV2>();
+        float startTime = Time.time;
+        DrunkHead.SetActive(true);
+        HeadMove.drunk = true;
+        Transform statEffectObject = statusEffectBar.transform.Find("drunk");
+        Image newStatusEffect;
+        if (statEffectObject == null)
+        {
+            newStatusEffect = Instantiate(statusEffectPrefab);
+            newStatusEffect.transform.name = "drunk";
+            newStatusEffect.sprite = drunkIcon;
+            newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
+        }
+        else
+        {
+            newStatusEffect = statEffectObject.GetComponent<Image>();
+        }
+        HeadMove.normalMove = -1;
+        myMove.drunkMod = -1;
+
+        while (Time.time - startTime < duration)
+        {
+            newStatusEffect.fillAmount = 1f - (Time.time - startTime) / duration;
+            yield return new WaitForEndOfFrame();
+        }
+        HeadMove.normalMove = 1;
+        myMove.drunkMod = 1;
+        DrunkHead.SetActive(false);
+        HeadMove.drunk = false;
+        Destroy(newStatusEffect.gameObject);
+        drunkness = null;
+    }
+
+    public override void Slow(float duration, float severity)
+    {
+        if (slowness != null) { StopCoroutine(slowness); }
+        slowness = StartCoroutine(processSlowness(duration, severity));
+    }
+
+    IEnumerator processSlowness(float duration, float severity)
+    {
+        PlayerMovementV2 myMove = GetComponent<PlayerMovementV2>();
+        myMove.slownessSeverity *= severity;
+        if (myMove.slownessSeverity < 0.25f) { myMove.slownessSeverity = 0.25f; }
+        float startTime = Time.time;
+        Transform statEffectObj = statusEffectBar.transform.Find("Slow");
+        Image newStatusEffect;
+        if (statEffectObj == null)
+        {
+            newStatusEffect = Instantiate(statusEffectPrefab);
+            newStatusEffect.transform.name = "Slow";
+            newStatusEffect.sprite = slowIcon;
+            newStatusEffect.transform.SetParent(statusEffectBar.transform, false);
+        }
+        else
+        {
+            newStatusEffect = statEffectObj.GetComponent<Image>();
+        }
+        float originSeverity = myMove.slownessSeverity;
+        float full = 1f - myMove.slownessSeverity;
+        while (Time.time - startTime < duration)
+        {
+            myMove.slownessSeverity = originSeverity + ((Time.time - startTime) / duration) * full;
+            newStatusEffect.fillAmount = 1f - (myMove.slownessSeverity - originSeverity) / full;
+            yield return new WaitForEndOfFrame();
+        }
+        Destroy(newStatusEffect.gameObject);
+        myMove.slownessSeverity = 1f;
+        slowness = null;
     }
 
     public override void InitiateTransmutation(float duration, GameObject replacement)

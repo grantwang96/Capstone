@@ -7,7 +7,7 @@ public class BasicMeleeEnemy : EnemyData {
     
     public override void setup(Movement owner)
     {
-        startingState = new NPCIdle();
+        startingState = new NPCWander();
         owner.baseSpeed = baseSpeed;
         owner.maxSpeed = maxSpeed;
         damageable ownerDam = owner.GetComponent<damageable>();

@@ -66,7 +66,7 @@ public class GravityWellVortex : MonoBehaviour {
             foreach(Transform loser in trapped)
             {
                 if(loser == null) { continue; }
-                Damageable dam = loser.GetComponent<Damageable>();
+                damageable dam = loser.GetComponent<damageable>();
                 dam.vortexGrab(transform, force, Time.time - startTime);
             }
         }
@@ -74,7 +74,7 @@ public class GravityWellVortex : MonoBehaviour {
 
     void OnTriggerEnter(Collider coll)
     {
-        if(coll.GetComponent<Damageable>() != null)
+        if(coll.GetComponent<damageable>() != null)
         {
             coll.transform.parent = transform;
             trapped.Add(coll.transform);
@@ -104,7 +104,7 @@ public class GravityWellVortex : MonoBehaviour {
         Transform newExp = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         foreach(Collider coll in colls)
         {
-            Damageable dam = coll.GetComponent<Damageable>();
+            damageable dam = coll.GetComponent<damageable>();
             if(dam != null)
             {
                 Vector3 dir = (coll.transform.position - transform.position).normalized;

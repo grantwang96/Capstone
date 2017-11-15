@@ -47,10 +47,10 @@ public class Transmute : SpellEffect
 
     public override void primaryEffect(ProjectileBehavior projFired, Collision hit)
     {
-        if (hit.collider.GetComponent<Damageable>() != null)
+        if (hit.collider.GetComponent<damageable>() != null)
         {
             GameObject replacement = possibleResults[UnityEngine.Random.Range(0, possibleResults.Count)];
-            hit.collider.GetComponent<Damageable>().InitiateTransmutation(projFired.power, replacement);
+            hit.collider.GetComponent<damageable>().InitiateTransmutation(projFired.power, replacement);
         }
         projFired.initiateDie(hit.contacts[0].point);
     }
@@ -71,11 +71,11 @@ public class Transmute : SpellEffect
 
     public override void secondaryEffect(ProjectileBehavior projFired, Collision hit)
     {
-        if (hit.collider.GetComponent<Damageable>() != null)
+        if (hit.collider.GetComponent<damageable>() != null)
         {
             Debug.Log("Hit transmutable target!");
             GameObject replacement = possibleResults[UnityEngine.Random.Range(0, possibleResults.Count)];
-            hit.collider.GetComponent<Damageable>().InitiateTransmutation(projFired.power, replacement);
+            hit.collider.GetComponent<damageable>().InitiateTransmutation(projFired.power, replacement);
         }
         projFired.initiateDie(hit.contacts[0].point);
     }
